@@ -30,8 +30,10 @@ class UsersController {
 	
 	//添加
 	async createUser(req,res,next){
-		let {name,password} = req.body;
-		let query = `insert into user(name,password) values(${name},${password})`;
+		let name = req.body.name;
+		let password = req.body.password;
+		console.log(`${name}`)
+		let query = `insert into user(name,password) values('${name}','${password}')`;
 		try{
 			let results = await db.query(query);
 			res.send('添加成功')

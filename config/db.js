@@ -7,21 +7,33 @@ var pool = mysql.createPool({
 });
 
 //@params sql 查询语句
-function query(sql){
+function query(sql,dt){
 	return new Promise((resolve,reject)=>{
 		pool.getConnection(function(err,connection){
 			if(err){
 				reject(err);
 				return ;
 			}
-	        connection.query(sql, function (err,rows) {
-	        	if(err){
-					reject(err);
-					return ;
-				}
-	            resolve(rows)
-	            connection.release();
-	        });
+			if(!dt){
+				connection.query(sql, function (err,rows) {
+		        	if(err){
+						reject(err);
+						return ;
+					}
+		            resolve(rows)
+		            connection.release();
+		        });
+			}else{
+				connection.query(sql,dt, function (err,rows) {
+		        	if(err){
+						reject(err);
+						return ;
+					}
+		            resolve(rows)
+		            connection.release();
+		        });
+			}
+	        
 	    });
 	})
 //  pool.getConnection(function(err,connection){

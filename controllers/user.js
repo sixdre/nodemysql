@@ -1,9 +1,16 @@
 import db from '../config/db'
+import $sql from '../sql/sql'
 class UsersController {
 	//查询所有
 	async getUsers(req,res,next){
 		try{
-			let results = await db.query('SELECT * FROM user');
+			let results = await db.query('SELECT id,name,create_time  FROM user order by id');
+			console.log(req.ip)
+//			let results = await db.query("SELECT * FROM user WHERE name IN ('李四','狗蛋')");
+//			let count  =await  db.query('SELECT COUNT(*) FROM user')
+//			let count  =await  db.query('SELECT AVG(password) FROM user')
+//			let count  =await  db.query('SELECT name FROM user WHERE password>(SELECT AVG(password) FROM user)')
+//			console.log(count)
 			res.render('index', { userList: results });
 		}catch(err){
 			console.log('查询出错'+err);
@@ -20,7 +27,7 @@ class UsersController {
 			res.send({
 				code:200,
 				msg:'查询成功',
-				data:results[0]
+				data:results.length==0?null:results[0]
 			})
 		}catch(err){
 			console.log('查询出错'+err);
@@ -32,10 +39,9 @@ class UsersController {
 	async createUser(req,res,next){
 		let name = req.body.name;
 		let password = req.body.password;
-		console.log(`${name}`)
 		let query = `insert into user(name,password) values('${name}','${password}')`;
 		try{
-			let results = await db.query(query);
+			let results = await db.query($sql.insert,[name,password]);
 			res.send('添加成功')
 		}catch(err){
 			console.log('添加出错'+err);
@@ -54,7 +60,6 @@ class UsersController {
 			console.log('更新出错'+err);
 			return next(err);
 		}
-		
 	}
 	
 	//删除

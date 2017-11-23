@@ -6,6 +6,7 @@
     "start": "nodemon ./bin/www"
   },
   "dependencies": {
+    "benben-model": "^1.0.26",
     "body-parser": "~1.18.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
@@ -15,6 +16,8 @@
     "moment": "^2.19.1",
     "morgan": "~1.9.0",
     "mysql": "^2.15.0",
+    "mysql2": "^1.5.1",
+    "sequelize": "^4.22.15",
     "serve-favicon": "~2.4.5"
   },
   "devDependencies": {

@@ -1,79 +1,19 @@
-import db from '../config/db'
-import $sql from '../sql/sql'
+import UserModel from '../models/user'
+
 class UsersController {
 	//查询所有
 	async getUsers(req,res,next){
 		try{
-			let results = await db.query('SELECT id,name,create_time  FROM user order by id');
-			console.log(req.ip)
-//			let results = await db.query("SELECT * FROM user WHERE name IN ('李四','狗蛋')");
-//			let count  =await  db.query('SELECT COUNT(*) FROM user')
-//			let count  =await  db.query('SELECT AVG(password) FROM user')
-//			let count  =await  db.query('SELECT name FROM user WHERE password>(SELECT AVG(password) FROM user)')
-//			console.log(count)
-			res.render('index', { userList: results });
-		}catch(err){
-			console.log('查询出错'+err);
-			return next(err);
-		}
-	}
-	
-	//根据id查询
-	async getUserById(req,res,next){
-		let id = req.params['id'];
-		let query = `SELECT * FROM user where id=${id} limit 1`;
-		try{
-			let results = await db.query(query);
-			res.send({
-				code:200,
-				msg:'查询成功',
-				data:results.length==0?null:results[0]
+			let data = await UserModel.findOne();
+			res.json({
+				data
 			})
 		}catch(err){
 			console.log('查询出错'+err);
 			return next(err);
 		}
 	}
-	
-	//添加
-	async createUser(req,res,next){
-		let name = req.body.name;
-		let password = req.body.password;
-		let query = `insert into user(name,password) values('${name}','${password}')`;
-		try{
-			let results = await db.query($sql.insert,[name,password]);
-			res.send('添加成功')
-		}catch(err){
-			console.log('添加出错'+err);
-			return next(err);
-		}
-	}
-	
-	//更新
-	async updateUser(req,res,next){
-		let id = req.params['id'];
-		let query = `update user set name="狗蛋" where id=${id}`;
-		try{
-			let results = await db.query(query);
-			res.send('更新成功')
-		}catch(err){
-			console.log('更新出错'+err);
-			return next(err);
-		}
-	}
-	
-	//删除
-	async deleteUser(req,res,next){
-		let id = req.params['id'];
-		let query = `delete from user where id=${id}`;
-		try{
-			let results = await db.query(query);
-			res.send('删除成功')
-		}catch(err){
-			console.log('删除出错'+err);
-			return next(err);
-		}
-	}
+
 	
 }
 

@@ -1,39 +1,8 @@
-var mysql = require("mysql");
-var pool = mysql.createPool({
-    host:"localhost",
-    user:"root",
-    password:"123456",
-    database:"test"
-});
-
-//@params sql 查询语句
-function query(sql,values){
-	return new Promise((resolve,reject)=>{
-		pool.getConnection(function(err,connection){
-			if(err){
-				reject(err);
-				return ;
-			}
-			connection.query(sql, values, ( err, rows) => {
-		        if ( err ) {
-		            reject( err )
-		        } else {
-		            resolve( rows )
-		        }
-		        connection.release()
-	        })
-	        
-	    });
-	})
-//  pool.getConnection(function(err,connection){
-//      connection.query(sql, function (err,rows) {
-//          callback(err,rows);
-//          connection.release();
-//      });
-//  });
+const db = {
+	database: 'test', // 使用哪个数据库
+    username: 'root', // 用户名
+    password: '123456', // 口令
+    host: 'localhost', // 主机名
+    port: 3306 // 端口号，MySQL默认3306
 }
-
-
-
-
-exports.query = query;
+export default db;

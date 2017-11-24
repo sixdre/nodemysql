@@ -1,10 +1,10 @@
-import UserModel from '../models/user'
+import {UserModel} from '../models/'
 
 class UsersController {
 	//查询所有
 	async getUsers(req,res,next){
 		try{
-			let data = await UserModel.findOne();
+			let data = await UserModel.findAll();
 			res.json({
 				data
 			})

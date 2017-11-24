@@ -5,15 +5,20 @@ import logger from 'morgan'
 import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
 import moment from 'moment'
-import Sequelize from 'sequelize'
-
-import db from './config/db'
-
 import router from './routes'
 
 var app = express();
 
 app.locals.moment = moment;
+
+app.all('*', function(req, res, next) {  
+    res.header("Access-Control-Allow-Origin", "*");  
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");  
+    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");  
+    res.header("X-Powered-By",' 3.2.1')  
+    res.header("Content-Type", "application/json;charset=utf-8");  
+    next();  
+});  
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

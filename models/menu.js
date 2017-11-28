@@ -1,3 +1,4 @@
+//菜单表
 export default function (sequelize, DataTypes) {
   	return  sequelize.define(
 	    'sys_menu',

@@ -24,8 +24,8 @@ const sequelize = new Sequelize(db.database, db.username, db.password, {
 export const UserModel  = sequelize.import('./user.js');
 export const MenuModel  = sequelize.import('./menu.js');
 export const RoleModel  = sequelize.import('./role.js');
-export const RoleMenuModel  = sequelize.import('./role_menu.js');
-
+export const PermMenuModel  = sequelize.import('./perm_menu.js');
+export const RolePermModel  = sequelize.import('./role_perm.js');
 
 //UserModel.hasOne(UserModel);
 //UserModel.belongsTo(UserModel);

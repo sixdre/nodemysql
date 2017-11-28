@@ -1,5 +1,6 @@
 import {MenuModel} from '../models/'
-
+import Sequelize from 'sequelize'
+const Op = Sequelize.Op;
 //根据菜单主键id获取下级菜单
 //id：菜单主键id
 //arry：菜单数组信息
@@ -37,6 +38,7 @@ class PermissionController {
 	async getMenus(req,res,next){
 		try{
 			let menus = await MenuModel.findAll();
+
    			var data = GetData(0, JSON.parse(JSON.stringify(menus)))
    			
 			res.json({
@@ -54,11 +56,22 @@ class PermissionController {
 	async createPermission(req,res,next){
 		let {roleName,menusId} = req.body;
 		
+		menusId = menusId.join(',')
+		
+		
+//		let menus = await MenuModel.findAll({
+//		  where: {
+//		    id: {
+//		      [Op.in]: menusId
+//		    }
+//		  }
+//		});
 		
 		
 		res.json({
 			roleName,
-			menusId
+			menusId,
+//			menus
 		})
 		
 	}

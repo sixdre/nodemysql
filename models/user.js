@@ -6,17 +6,23 @@ export default function (sequelize, DataTypes) {
 	    'user',
 	    // 字段定义（主键、created_at、updated_at默认包含，不用特殊定义）
 	    {
-	        nick: {
+	        username: {
 	            type: DataTypes.STRING,
 	            allowNull: false
 	        },
-	        department: {
-	            type: DataTypes.STRING,
-	            allowNull: true
-	        }
+	        password:{
+	        	type: DataTypes.STRING,
+	            allowNull: false
+	        },
+	        roleId: {
+	            type: DataTypes.INTEGER(10), // 字段类型
+	            allowNull: false        	// 是否允许为NULL
+	        },
 	    }
 	);
 }
+
+
 
 
 

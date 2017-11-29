@@ -43,6 +43,8 @@ class PermissionController {
 
    			var data = GetData(0, JSON.parse(JSON.stringify(menus)))
    			
+   			var data = menus
+   			
 			res.json({
 				data,
 				menus
@@ -118,7 +120,6 @@ class PermissionController {
 		let data = GetData(Math.min.apply( Math, pids), JSON.parse(JSON.stringify(data1)))
 		
 		res.json({
-			data1,
 			data
 		})
 		

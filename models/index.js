@@ -23,9 +23,10 @@ const sequelize = new Sequelize(db.database, db.username, db.password, {
 //导出数据模型
 export const UserModel  = sequelize.import('./user.js');
 export const MenuModel  = sequelize.import('./menu.js');
-export const RoleModel  = sequelize.import('./role.js');
-export const PermMenuModel  = sequelize.import('./perm_menu.js');
-export const RolePermModel  = sequelize.import('./role_perm.js');
+export const PermissionModel  = sequelize.import('./permission.js');
+export const OperateModel  = sequelize.import('./operate.js');
+export const MenuOpeModel  = sequelize.import('./menu_operate.js');
+
 
 //UserModel.hasOne(UserModel);
 //UserModel.belongsTo(UserModel);

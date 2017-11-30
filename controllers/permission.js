@@ -1,4 +1,4 @@
-import {MenuModel,MenuOpeModel,OperateModel,PermissionModel} from '../models/'
+import {MenuModel,MenuOpeModel,OperateModel,PermissionModel,PermModel} from '../models/'
 
 import Sequelize from 'sequelize'
 const Op = Sequelize.Op;
@@ -41,13 +41,12 @@ class PermissionController {
 		try{
 			let menus = await MenuModel.findAll();
 
-   			var data = GetData(0, JSON.parse(JSON.stringify(menus)))
+   		var data = GetData(0, JSON.parse(JSON.stringify(menus)))
    			
-   			var data = menus
+   			
    			
 			res.json({
-				data,
-				menus
+				data
 			})
 
 
@@ -63,10 +62,43 @@ class PermissionController {
 		
 	}
 	
-	
+	async getPermission(req,res,next){
+		//读取权限表
+		let permission = await PermModel.findAll()	
+
+		let Pro = permission.map(item=>{
+			return new Promise((resolve, reject) => {
+				return  MenuModel.findOne({
+					attributes: ['id','path','name','pid'],
+				  	where: {
+				    	id: item.menuId
+				  	}
+				}).then(re=>{
+					
+					let data = {
+						id:re.id,
+						path:re.path,
+						name:re.name,
+						pid:re.pid,
+						permission:item.op.split(',')
+					};
+					resolve(data)
+				}).catch(err=>{
+					reject(err)
+				})
+			})
+		})
+
+		let data1 = await Promise.all(Pro);
+		let pids = data1.map(item=> item.pid);
+		let data = GetData(Math.min.apply( Math, pids), JSON.parse(JSON.stringify(data1)))
+		res.json({
+			data
+		})
+	}
 	
 	//读取权限
-	async getPermission(req,res,next){
+	/*async getPermission(req,res,next){
 		
 		//读取权限表
 		let permission = await PermissionModel.findOne({
@@ -123,7 +155,7 @@ class PermissionController {
 			data
 		})
 		
-	}
+	}*/
 	
 }
 

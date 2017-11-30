@@ -24,6 +24,7 @@ const sequelize = new Sequelize(db.database, db.username, db.password, {
 export const UserModel  = sequelize.import('./user.js');
 export const MenuModel  = sequelize.import('./menu.js');
 export const PermissionModel  = sequelize.import('./permission.js');
+export const PermModel  = sequelize.import('./perm.js');
 export const OperateModel  = sequelize.import('./operate.js');
 export const MenuOpeModel  = sequelize.import('./menu_operate.js');
 
@@ -35,6 +36,8 @@ export const MenuOpeModel  = sequelize.import('./menu_operate.js');
 
 // 同步模型到数据库中
 sequelize.sync();
+
+
 
 
 

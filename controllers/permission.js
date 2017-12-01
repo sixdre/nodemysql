@@ -1,4 +1,4 @@
-import {MenuModel,MenuOpeModel,OperateModel,PermissionModel,PermModel} from '../models/'
+import {MenuModel,MenuOpeModel,RoleModel,OperateModel,PermissionModel,PermModel} from '../models/'
 
 import Sequelize from 'sequelize'
 const Op = Sequelize.Op;
@@ -36,6 +36,9 @@ function GetData(id, arry) {
 
 
 class PermissionController {
+	constructor() {
+		this.getPermission = this.getPermission.bind(this)
+	}
 	//查询所有
 	async getMenus(req,res,next){
 		try{
@@ -62,11 +65,18 @@ class PermissionController {
 		
 	}
 	
-	async getPermission(req,res,next){
-		//读取权限表
-		let permission = await PermModel.findAll()	
-
-		let Pro = permission.map(item=>{
+	//根据角色的ID来获取当前角色对应的权限
+	async getPermissionByRoleId(roleId){
+		
+		let role =  await RoleModel.findOne({where: {id: roleId}});
+		let permissions = await PermModel.findAll({
+			where: {
+			    id: {
+			      [Op.in]: role.permission.split(',')
+			    }
+			}
+		})
+		let Pro = permissions.map(item=>{
 			return new Promise((resolve, reject) => {
 				return  MenuModel.findOne({
 					attributes: ['id','path','name','pid'],
@@ -74,7 +84,6 @@ class PermissionController {
 				    	id: item.menuId
 				  	}
 				}).then(re=>{
-					
 					let data = {
 						id:re.id,
 						path:re.path,
@@ -88,13 +97,22 @@ class PermissionController {
 				})
 			})
 		})
-
+		
 		let data1 = await Promise.all(Pro);
 		let pids = data1.map(item=> item.pid);
 		let data = GetData(Math.min.apply( Math, pids), JSON.parse(JSON.stringify(data1)))
+		return data;
+	}
+	
+	
+	
+	async getPermission(req,res,next){
+		let roleId = req.params['roleId'];;
+		let data = await this.getPermissionByRoleId(roleId)
 		res.json({
 			data
 		})
+		
 	}
 	
 	//读取权限

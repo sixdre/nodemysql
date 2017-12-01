@@ -27,7 +27,7 @@ export const PermissionModel  = sequelize.import('./permission.js');
 export const PermModel  = sequelize.import('./perm.js');
 export const OperateModel  = sequelize.import('./operate.js');
 export const MenuOpeModel  = sequelize.import('./menu_operate.js');
-
+export const RoleModel  = sequelize.import('./role.js');
 
 //UserModel.hasOne(UserModel);
 //UserModel.belongsTo(UserModel);

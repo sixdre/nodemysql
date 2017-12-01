@@ -1,8 +1,10 @@
 import express from 'express'
 import permissionCtrl from '../controllers/permission'
+import UserCtrl from '../controllers/user'
 const router = express.Router();
 
-router.post('/',permissionCtrl.createPermission);
-router.get('/:roleId',permissionCtrl.getPermission);
+router.post('/login',UserCtrl.login);
+
+
 
 module.exports = router;

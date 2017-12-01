@@ -7,7 +7,10 @@ export default function (sequelize, DataTypes) {
 	            type: DataTypes.STRING, // 字段类型
 	            allowNull: false,         	// 是否允许为NULL
 	        },
-	      
+	      	permission:{
+	      		type: DataTypes.STRING, // 字段类型
+	            allowNull: false,         	// 是否允许为NULL
+	      	}
 	    }
 	);
 }

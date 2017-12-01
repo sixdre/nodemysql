@@ -19,6 +19,14 @@ export default function (sequelize, DataTypes) {
 	        name: {
 	            type: DataTypes.STRING,
 	            allowNull: false
+	        },
+	        icon:{
+	        	type: DataTypes.STRING,
+	            allowNull: true
+	        },
+	        hidden:{
+	        	type: DataTypes.INTEGER(10),
+	            allowNull: true,         	
 	        }
 	    }
 	);

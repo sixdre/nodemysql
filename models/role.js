@@ -9,7 +9,7 @@ export default function (sequelize, DataTypes) {
 	        },
 	      	permission:{
 	      		type: DataTypes.STRING, // 字段类型
-	            allowNull: false,         	// 是否允许为NULL
+	            allowNull: true,         	// 是否允许为NULL
 	      	}
 	    }
 	);

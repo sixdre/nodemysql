@@ -39,36 +39,45 @@ class PermissionController {
 	constructor() {
 		this.getPermission = this.getPermission.bind(this)
 	}
-	//查询所有
-	async getMenus(req,res,next){
-		try{
-			let menus = await MenuModel.findAll();
 
-   		var data = GetData(0, JSON.parse(JSON.stringify(menus)))
-   			
-   			
-   			
-			res.json({
-				data
-			})
-
-
-		}catch(err){
-			console.log('查询出错'+err);
-			return next(err);
-		}
-	}
-	
 	//创建权限
 	async createPermission(req,res,next){
 		
 		
 	}
 	
+	//创建角色
+	createRole(req,res,next){
+		let name = req.body.name;
+		let role={
+			name,
+			createdAt:'2017-12-01 10:35:41',
+			updatedAt:'2017-12-01 10:35:41'
+		}
+		RoleModel.create(role).then(result=>{
+			res.json({
+				code:1,
+				msg:'创建成功'
+			})
+		},function(err){
+			res.json({
+				code:0,
+				msg:'创建失败'
+			})
+		})
+		
+	}
+	
+	
+	
+	
 	//根据角色的ID来获取当前角色对应的权限
 	async getPermissionByRoleId(roleId){
-		
 		let role =  await RoleModel.findOne({where: {id: roleId}});
+		if(!role.permission){
+			return [];
+		}
+		
 		let permissions = await PermModel.findAll({
 			where: {
 			    id: {
@@ -84,12 +93,18 @@ class PermissionController {
 				    	id: item.menuId
 				  	}
 				}).then(re=>{
+					let permission = item.op;
+					if(!permission){
+						permission=[]
+					}else{
+						permission = permission.split(',')
+					}
 					let data = {
 						id:re.id,
 						path:re.path,
 						name:re.name,
 						pid:re.pid,
-						permission:item.op.split(',')
+						permission:permission
 					};
 					resolve(data)
 				}).catch(err=>{
@@ -114,7 +129,16 @@ class PermissionController {
 		})
 		
 	}
-	
+	async getMenus(req,res,next){
+		let menus = await MenuModel.findAll();
+		
+		let pids = menus.map(item=> item.pid);
+		let data = GetData(Math.min.apply( Math, pids), JSON.parse(JSON.stringify(menus)))
+		
+		res.json({
+			data
+		})
+	}
 	//读取权限
 	/*async getPermission(req,res,next){
 		

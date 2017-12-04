@@ -116,13 +116,14 @@ class PermissionController {
 		let data1 = await Promise.all(Pro);
 		let pids = data1.map(item=> item.pid);
 		let data = GetData(Math.min.apply( Math, pids), JSON.parse(JSON.stringify(data1)))
+		
 		return data;
 	}
 	
 	
 	
 	async getPermission(req,res,next){
-		let roleId = req.params['roleId'];;
+		let roleId = req.params['roleId'];
 		let data = await this.getPermissionByRoleId(roleId)
 		res.json({
 			data

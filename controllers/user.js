@@ -25,8 +25,7 @@ class UsersController {
 				msg:'参数错误'
 			})
 		}
-		
-		
+
 		let user =  await UserModel.findOne({where: {username: username}})
 		if(!user){
 			res.json({

@@ -40,37 +40,93 @@ class PermissionController {
 		this.getPermission = this.getPermission.bind(this)
 	}
 
-	//创建权限
-	async createPermission(req,res,next){
+	//给角色分配权限
+	async createPermissionByRoleId(req,res,next){
+		let pers = req.body.data;
+		let roleId = req.body.roleId;
+		if(!roleId){
+			res.json({
+				code:-1,
+				msg:'参数缺失'
+			})
+			return ;
+		}
+		let role = await RoleModel.findOne({where: {id: roleId}});
+		if(!role){
+			res.json({
+				code:0,
+				msg:'没有找到该角色'
+			})
+			return ;
+		}
+
+		let Pro = pers.map(item=>{
+			let newper={
+				name:'测试权限',
+				menuId:item.id,
+				op:item.permission.join(','),
+				createdAt:'2017-12-01 10:35:41',
+				updatedAt:'2017-12-01 10:35:41'
+			}
+			return new Promise((resolve, reject) => {
+				return PermModel.create(newper).then(function(results){
+					resolve(results.id);
+				},reject)
+			})
+		})
+//		
+		let permission = await Promise.all(Pro);
 		
+		await RoleModel.update({permission:permission.join(',')},{where:{id: roleId}})
 		
+		res.json({
+			code:1,
+			msg:'创建成功'
+		})
 	}
 	
 	//创建角色
-	createRole(req,res,next){
+	async createRole(req,res,next){
 		let name = req.body.name;
-		let role={
-			name,
-			createdAt:'2017-12-01 10:35:41',
-			updatedAt:'2017-12-01 10:35:41'
-		}
-		RoleModel.create(role).then(result=>{
+		try{
+			let role = await RoleModel.findOne({where: {name: name}});
+			if(role){
+				res.json({
+					code:0,
+					msg:'角色名称已存在'
+				})
+				return ;
+			}
+			let newrole={
+				name,
+				createdAt:'2017-12-01 10:35:41',
+				updatedAt:'2017-12-01 10:35:41'
+			}
+			await  RoleModel.create(newrole);
 			res.json({
 				code:1,
 				msg:'创建成功'
 			})
-		},function(err){
+		}catch(err){
 			res.json({
 				code:0,
 				msg:'创建失败'
 			})
-		})
+		}
 		
 	}
 	
+	//获取所有的角色
+	async getRoles(req,res,next){
+		let roles = await RoleModel.findAll();
+		res.json({
+			code:1,
+			data:roles,
+			msg:'获取成功'
+		})
+	}
 	
-	
-	
+
 	//根据角色的ID来获取当前角色对应的权限
 	async getPermissionByRoleId(roleId){
 		let role =  await RoleModel.findOne({where: {id: roleId}});

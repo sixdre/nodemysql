@@ -6,6 +6,6 @@ router.post('/',permissionCtrl.createPermissionByRoleId);
 router.post('/getPermission',permissionCtrl.getPermission);
 router.post('/getPermissionForUpdate',permissionCtrl.getPermissionByRoleIdForUpdate);
 router.post('/role',permissionCtrl.createRole);
-router.get('/menus/menus',permissionCtrl.getMenus);
-router.get('/roles/roles',permissionCtrl.getRoles);
+router.get('/menus',permissionCtrl.getMenus);
+router.get('/roles',permissionCtrl.getRoles);
 module.exports = router;

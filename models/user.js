@@ -16,7 +16,7 @@ export default function (sequelize, DataTypes) {
 	        },
 	        roleId: {
 	            type: DataTypes.INTEGER(10), // 字段类型
-	            allowNull: false        	// 是否允许为NULL
+	            allowNull: true        	// 是否允许为NULL
 	        },
 	    }
 	);

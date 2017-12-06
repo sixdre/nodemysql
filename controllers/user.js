@@ -42,7 +42,8 @@ class UsersController {
 			res.json({
 				code:1,
 				msg:'登录成功',
-				data,
+				data:data.data,
+				ids:data.ids,
 				role:user.roleId,
 				token:(new Date().getTime())/1000
 			})

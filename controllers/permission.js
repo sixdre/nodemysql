@@ -8,6 +8,10 @@ const Op = Sequelize.Op;
 function GetParentArry(id, arry) {
     var newArry = new Array();
     for (var i in arry) {
+    	var permission = arry[i].permission;
+    	if(!permission||!permission.length){
+    		arry[i].permission = [];
+    	}
         if (arry[i].pid == id){
         	newArry.push(arry[i]);
         }
@@ -128,6 +132,46 @@ class PermissionController {
 	
 
 	//根据角色的ID来获取当前角色对应的权限
+	async getPermissionByRoleIdForUpdate(req,res,next){
+		let roleId = req.body['roleId'];
+		let role =  await RoleModel.findOne({where: {id: roleId}});
+		if(!role.permission){
+			return [];
+		}
+		
+		let permissions = await PermModel.findAll({
+			where: {
+			    id: {
+			      [Op.in]: role.permission.split(',')
+			    }
+			}
+		})
+		permissions = JSON.parse(JSON.stringify(permissions))
+		
+		let menus = await MenuModel.findAll();
+			menus = JSON.parse(JSON.stringify(menus))
+		
+		permissions.forEach(item=>{
+			menus.map(s=>{
+				if(s.id==item.menuId){
+					s['permission'] = item.op.split(',')
+				}
+				return s;
+			})
+		})
+		
+		let ids = permissions.map(item=> item.menuId)
+		let pids = menus.map(item=> item.pid);
+		let data = GetData(Math.min.apply( Math, pids), JSON.parse(JSON.stringify(menus)))
+		
+		res.json({
+			ids,
+			data
+		})
+
+	}
+	
+	
 	async getPermissionByRoleId(roleId){
 		let role =  await RoleModel.findOne({where: {id: roleId}});
 		if(!role.permission){
@@ -170,28 +214,33 @@ class PermissionController {
 		})
 		
 		let data1 = await Promise.all(Pro);
+		let ids = data1.map(item=> item.id);
+		
+		
 		let pids = data1.map(item=> item.pid);
 		let data = GetData(Math.min.apply( Math, pids), JSON.parse(JSON.stringify(data1)))
 		
-		return data;
+		return {
+			ids,
+			data
+		};
 	}
 	
 	
 	
+	
 	async getPermission(req,res,next){
-		let roleId = req.params['roleId'];
+		let roleId = req.body['roleId'];
 		let data = await this.getPermissionByRoleId(roleId)
-		res.json({
-			data
-		})
+		res.json(data)
 		
 	}
 	async getMenus(req,res,next){
 		let menus = await MenuModel.findAll();
 		
+		
 		let pids = menus.map(item=> item.pid);
 		let data = GetData(Math.min.apply( Math, pids), JSON.parse(JSON.stringify(menus)))
-		
 		res.json({
 			data
 		})

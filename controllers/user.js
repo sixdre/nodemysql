@@ -9,6 +9,7 @@ class UsersController {
 		try{
 			let data = await UserModel.findAll();
 			res.json({
+				code:1,
 				data
 			})
 		}catch(err){

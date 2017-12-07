@@ -28,6 +28,7 @@ export const RoleModel  = sequelize.import('./role.js');
 
 
 
+
 // 同步模型到数据库中
 function initSqlData(){
 	sequelize.sync().then(function(){

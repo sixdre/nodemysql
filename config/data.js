@@ -50,6 +50,7 @@ const data={
             "path": "/permission",
             "name": "权限管理",
             "pid": 0,
+            "hidden":1,
             "createdAt":'2017-12-01 10:35:41',
 			"updatedAt":'2017-12-01 10:35:41',
 			"permission": ["add","remove","edit"]

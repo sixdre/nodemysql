@@ -10,6 +10,11 @@ export default function (sequelize, DataTypes) {
 	      	permission:{
 	      		type: DataTypes.STRING, // 字段类型
 	            allowNull: true,         	// 是否允许为NULL
+	      	},
+	      	super:{					//是否为超级管理员
+	      		type: DataTypes.BOOLEAN,
+	            allowNull: false, 
+	            defaultValue:0		//默认值
 	      	}
 	    }
 	);

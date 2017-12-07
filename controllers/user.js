@@ -18,6 +18,7 @@ class UsersController {
 					}).then(re=>{
 						if(re){
 							item.roleName = re.name;
+							item.roleSuper = re.super;
 						}else{
 							item.roleName = null;
 						}

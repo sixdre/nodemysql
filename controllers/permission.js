@@ -119,7 +119,7 @@ class PermissionController {
 	
 	//获取所有的角色
 	async getRoles(req,res,next){
-		let roles = await RoleModel.findAll();
+		let roles = await RoleModel.findAll({where:{super:0}});
 		res.json({
 			code:1,
 			data:roles,
@@ -185,13 +185,12 @@ class PermissionController {
 		let Pro = permissions.map(item=>{
 			return new Promise((resolve, reject) => {
 				return  MenuModel.findOne({
-					attributes: ['id','path','name','pid'],
+					attributes: ['id','path','name','pid','hidden','icon'],
 				  	where: {
 				    	id: item.menuId
 				  	}
 				}).then(re=>{
 					let permission = item.op;
-					let data = {}
 					if(!permission){
 						permission=[]
 					}else{
@@ -199,13 +198,11 @@ class PermissionController {
 					}
 					re = JSON.parse(JSON.stringify(re))
 					if(re){
-						data.id=re.id,
-						data.path=re.path,
-						data.name=re.name,
-						data.pid=re.pid,
-						data.permission=permission
+						re.permission=permission
+					}else{
+						re = {};
 					}
-					resolve(data)
+					resolve(re)
 				}).catch(err=>{
 					reject(err)
 				})
@@ -217,8 +214,7 @@ class PermissionController {
 		let data = transformTozTreeFormat(JSON.parse(JSON.stringify(data1)))
 		return {
 			ids,
-			data,
-			data1
+			data
 		};
 	}
 	

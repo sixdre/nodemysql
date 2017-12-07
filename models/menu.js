@@ -24,10 +24,11 @@ export default function (sequelize, DataTypes) {
 	        	type: DataTypes.STRING,
 	            allowNull: true
 	        },
-	        hidden:{
-	        	type: DataTypes.INTEGER(10),
-	            allowNull: true,         	
-	        }
+	        hidden:{					//是否为超级管理员
+	      		type: DataTypes.BOOLEAN,
+	            allowNull: false, 
+	            defaultValue:0		//默认值
+	      	}
 	    }
 	);
 }

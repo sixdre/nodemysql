@@ -1,4 +1,4 @@
-import {MenuModel,MenuOpeModel,RoleModel,OperateModel,PermissionModel,PermModel} from '../models/'
+import {MenuModel,RoleModel,PermModel} from '../models/'
 
 import Sequelize from 'sequelize'
 const Op = Sequelize.Op;
@@ -194,18 +194,20 @@ class PermissionController {
 				  	}
 				}).then(re=>{
 					let permission = item.op;
+					let data = {}
 					if(!permission){
 						permission=[]
 					}else{
 						permission = permission.split(',')
 					}
-					let data = {
-						id:re.id,
-						path:re.path,
-						name:re.name,
-						pid:re.pid,
-						permission:permission
-					};
+					re = JSON.parse(JSON.stringify(re))
+					if(re){
+						data.id=re.id,
+						data.path=re.path,
+						data.name=re.name,
+						data.pid=re.pid,
+						data.permission=permission
+					}
 					resolve(data)
 				}).catch(err=>{
 					reject(err)
@@ -217,7 +219,11 @@ class PermissionController {
 		let ids = data1.map(item=> item.id);
 		
 		
-		let pids = data1.map(item=> item.pid);
+		let pids = data1.filter(item => {
+			return !(item.pid===undefined)		//判断当前的是否为空对象
+		}).map(item=> item.pid);
+		
+		let minId = Math.min.apply( Math, pids);
 		let data = GetData(Math.min.apply( Math, pids), JSON.parse(JSON.stringify(data1)))
 		
 		return {
@@ -237,8 +243,6 @@ class PermissionController {
 	}
 	async getMenus(req,res,next){
 		let menus = await MenuModel.findAll();
-		
-		
 		let pids = menus.map(item=> item.pid);
 		let data = GetData(Math.min.apply( Math, pids), JSON.parse(JSON.stringify(menus)))
 		res.json({

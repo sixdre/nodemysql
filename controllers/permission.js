@@ -2,40 +2,37 @@ import {MenuModel,RoleModel,PermModel} from '../models/'
 
 import Sequelize from 'sequelize'
 const Op = Sequelize.Op;
-//根据菜单主键id获取下级菜单
-//id：菜单主键id
-//arry：菜单数组信息
-function GetParentArry(id, arry) {
-    var newArry = new Array();
-    for (var i in arry) {
-    	var permission = arry[i].permission;
-    	if(!permission||!permission.length){
-    		arry[i].permission = [];
-    	}
-        if (arry[i].pid == id){
-        	newArry.push(arry[i]);
+
+//生成tree数据
+function transformTozTreeFormat (sNodes) {
+	let setting = {idKey:'id',parentKey:'pid',childKey:'child'};
+    var i, l,
+        key = setting.idKey,
+        parentKey = setting.parentKey,
+        childKey = setting.childKey;
+    if (!key || key == "" || !sNodes) return [];
+
+    if (Array.isArray(sNodes)) {
+        var r = [];
+        var tmpMap = {};
+        for (i = 0, l = sNodes.length; i < l; i++) {
+            tmpMap[sNodes[i][key]] = sNodes[i];
+            if(!sNodes[i].permission) sNodes[i].permission=[]	//my add
         }
-    }
-    return newArry;
-}
-
-
-function GetData(id, arry) {
-    var childArry = GetParentArry(id, arry);		//一级菜单
-    if (childArry.length > 0) {
-        for (var i in childArry) {
-        	var c = GetData(childArry[i].id, arry);
-        	if(c.length){
-        		childArry[i].child = c;
-        	}
+        for (i = 0, l = sNodes.length; i < l; i++) {
+            if (tmpMap[sNodes[i][parentKey]] && sNodes[i][key] != sNodes[i][parentKey]) {
+                if (!tmpMap[sNodes[i][parentKey]][childKey])
+                    tmpMap[sNodes[i][parentKey]][childKey] = [];
+                tmpMap[sNodes[i][parentKey]][childKey].push(sNodes[i]);
+            } else {
+                r.push(sNodes[i]);
+            }
         }
+        return r;
+    } else {
+        return [sNodes];
     }
-     
-    return childArry;
 }
-
-
-
 
 
 
@@ -160,10 +157,10 @@ class PermissionController {
 			})
 		})
 		
-		let ids = permissions.map(item=> item.menuId)
-		let pids = menus.map(item=> item.pid);
-		let data = GetData(Math.min.apply( Math, pids), JSON.parse(JSON.stringify(menus)))
+		let ids = permissions.map(item=> Number(item.menuId))
 		
+		let data = transformTozTreeFormat(JSON.parse(JSON.stringify(menus)))
+	
 		res.json({
 			ids,
 			data
@@ -216,19 +213,12 @@ class PermissionController {
 		})
 		
 		let data1 = await Promise.all(Pro);
-		let ids = data1.map(item=> item.id);
-		
-		
-		let pids = data1.filter(item => {
-			return !(item.pid===undefined)		//判断当前的是否为空对象
-		}).map(item=> item.pid);
-		
-		let minId = Math.min.apply( Math, pids);
-		let data = GetData(Math.min.apply( Math, pids), JSON.parse(JSON.stringify(data1)))
-		
+		let ids = data1.map(item=> Number(item.id));
+		let data = transformTozTreeFormat(JSON.parse(JSON.stringify(data1)))
 		return {
 			ids,
-			data
+			data,
+			data1
 		};
 	}
 	
@@ -243,8 +233,7 @@ class PermissionController {
 	}
 	async getMenus(req,res,next){
 		let menus = await MenuModel.findAll();
-		let pids = menus.map(item=> item.pid);
-		let data = GetData(Math.min.apply( Math, pids), JSON.parse(JSON.stringify(menus)))
+		let data = transformTozTreeFormat(JSON.parse(JSON.stringify(menus)))
 		res.json({
 			data
 		})

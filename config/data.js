@@ -29,15 +29,42 @@ const data={
         },
         {
             "id": 4,
-            "path": "/role",
-            "name": "角色管理",
+            "path": "/permission",
+            "name": "权限管理",
             "pid": 0,
-      		"createdAt":'2017-12-01 10:35:41',
+            "createdAt":'2017-12-01 10:35:41',
 			"updatedAt":'2017-12-01 10:35:41',
 			"permission": ["add","remove","edit"]
         },
         {
             "id": 5,
+            "path": "/permission/permission",
+            "name": "权限列表",
+            "pid": 4,
+            "createdAt":'2017-12-01 10:35:41',
+			"updatedAt":'2017-12-01 10:35:41',
+			"permission": ["add","remove","edit"]
+        },
+        {
+            "id": 6,
+            "path": "/permission/role",
+            "name": "角色列表",
+            "pid": 4,
+      		"createdAt":'2017-12-01 10:35:41',
+			"updatedAt":'2017-12-01 10:35:41',
+			"permission": ["add","remove","edit"]
+        },
+        {
+            "id": 7,
+            "path": "/permission/menu",
+            "name": "菜单列表",
+            "pid": 4,
+            "createdAt":'2017-12-01 10:35:41',
+			"updatedAt":'2017-12-01 10:35:41',
+			"permission": ["add","remove","edit"]
+        },
+        {
+            "id": 8,
             "path": "/users",
             "name": "用户管理",
             "pid": 0,
@@ -45,16 +72,7 @@ const data={
 			"updatedAt":'2017-12-01 10:35:41',
 			"permission": ["add","remove","edit"]
         },
-        {
-            "id": 6,
-            "path": "/permission",
-            "name": "权限管理",
-            "pid": 0,
-            "hidden":1,
-            "createdAt":'2017-12-01 10:35:41',
-			"updatedAt":'2017-12-01 10:35:41',
-			"permission": ["add","remove","edit"]
-        }
+
     ],
     
 

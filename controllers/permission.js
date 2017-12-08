@@ -1,4 +1,4 @@
-import {MenuModel,RoleModel,PermModel} from '../models/'
+import {PermissionModel,MenuModel,RoleModel,PermModel} from '../models/'
 
 import Sequelize from 'sequelize'
 const Op = Sequelize.Op;
@@ -40,6 +40,9 @@ class PermissionController {
 	constructor() {
 		this.getPermission = this.getPermission.bind(this)
 	}
+
+	
+
 
 	//给角色分配权限
 	async createPermissionByRoleId(req,res,next){
@@ -231,6 +234,7 @@ class PermissionController {
 		let menus = await MenuModel.findAll();
 		let data = transformTozTreeFormat(JSON.parse(JSON.stringify(menus)))
 		res.json({
+			menus:menus,
 			data
 		})
 	}

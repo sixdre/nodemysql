@@ -1,4 +1,3 @@
-
 export default function (sequelize, DataTypes) {
   	return sequelize.define(
 	    // 默认表名（一般这里写单数），生成时会自动转换成复数形式
@@ -22,17 +21,5 @@ export default function (sequelize, DataTypes) {
 	);
 }
 
-
-
-
-
-//User.sync({force: false}).then(() => {
-//// 表已创建
-//return User.create({
-//  'emp_id': '3',
-//  'nick': '小明',
-//  'department': '技术部'
-//});
-//});
 
 

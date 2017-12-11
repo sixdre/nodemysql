@@ -41,6 +41,7 @@ class PermissionController {
 		
 	}
 
+	//创建权限
 	async createPermission(req,res,next){
 		let obj = {
 			name:req.body['name'],
@@ -62,32 +63,7 @@ class PermissionController {
 		
 	}
 	
-	async getMenuToPermission(req,res,next){
-		let menus = await MenuModel.findAll();
-			menus = transformTozTreeFormat(JSON.parse(JSON.stringify(menus)));
-		let Pro = menus.map(item=>{
-			return new Promise((resolve, reject) => {
-				return  PermissionModel.findAll({
-				  	where: {
-				    	tag: item.id
-				  	}
-				}).then(re=>{
-					item.permission = re;
-					resolve(item)
-				}).catch(err=>{
-					reject(err)
-				})
-			})
-		})
-		
-		let data = await Promise.all(Pro);
-		res.json({
-			code:1,
-			data,
-			msg:'权限列表获取成功'
-		})
-	}
-	
+	//获取权限列表
 	async getPermissionList(req,res,next){
 
 		try{
@@ -120,7 +96,77 @@ class PermissionController {
 			
 		}
 	}
-
+	
+	//根据分类获取权限
+	async getMenuToPermission(req,res,next){
+		let menus = await MenuModel.findAll();
+			menus = transformTozTreeFormat(JSON.parse(JSON.stringify(menus)));
+		let Pro = menus.map(item=>{
+			return new Promise((resolve, reject) => {
+				return  PermissionModel.findAll({
+				  	where: {
+				    	tag: item.id
+				  	}
+				}).then(re=>{
+					item.permission = re;
+					resolve(item)
+				}).catch(err=>{
+					reject(err)
+				})
+			})
+		})
+		
+		let data = await Promise.all(Pro);
+		res.json({
+			code:1,
+			data,
+			msg:'权限列表获取成功'
+		})
+	}
+	
+	//保存角色的权限
+	async saveRolePermission(req,res,next){
+		let roleId = req.body.roleId;
+		let menus = req.body.menus;
+		let resource = req.body.resource;
+		let role = await RoleModel.findOne({where: {id: roleId}});
+		if(!role){
+			res.json({
+				code:0,
+				msg:'没有找到该角色'
+			})
+			return ;
+		}
+		
+		let Pro = menus.map(item=>{
+			let newper={
+				name:'测试权限',
+				menuId:item.id,
+				op:item.permission.join(','),
+				createdAt:'2017-12-01 10:35:41',
+				updatedAt:'2017-12-01 10:35:41'
+			}
+			return new Promise((resolve, reject) => {
+				return PermModel.create(newper).then(function(results){
+					resolve(results.id);
+				},reject)
+			})
+		})
+//		
+		let permission = await Promise.all(Pro);
+		
+		await RoleModel.update({permission:permission.join(','),resource:resource.join(',')},{where:{id: roleId}})
+		
+		
+		res.json({
+			code:1,
+			msg:'创建成功'
+		})
+		
+		
+		
+	}
+	
 	
 }
 

@@ -82,13 +82,14 @@ function initSqlData(){
 				UserModel.create(obj);
 			}
 		})
+		
 	}).catch(function(error) {
 	  
 	});
 }
 
 
-initSqlData()
+//initSqlData()
 
 
 

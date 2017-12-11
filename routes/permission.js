@@ -1,7 +1,12 @@
 import express from 'express'
 import permissionCtrl from '../controllers/permission'
 import newpermissionCtrl from '../controllers/newPermission'
+import auth from '../middleware/auth'
 const router = express.Router();
+
+
+
+
 
 router.post('/',permissionCtrl.createPermissionByRoleId);
 router.post('/getPermission',permissionCtrl.getPermission);
@@ -14,5 +19,9 @@ router.get('/roles',permissionCtrl.getRoles);
 
 router.post('/v2/createPermission',newpermissionCtrl.createPermission);
 router.get('/v2/getPermission',newpermissionCtrl.getPermissionList);
-router.get('/v2/getMenusPermission',newpermissionCtrl.getMenuToPermission);
+router.get('/v2/getMenusPermission',auth.checkRole,newpermissionCtrl.getMenuToPermission);
+router.post('/v2/saveRolePermission',newpermissionCtrl.saveRolePermission);
+
+
+
 module.exports = router;

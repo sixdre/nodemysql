@@ -1,4 +1,4 @@
-import {PermissionModel,MenuModel,RoleModel,PermModel} from '../models/'
+import {PermissionModel,MenuModel,RoleModel,PermPathModel} from '../models/'
 
 import Sequelize from 'sequelize'
 const Op = Sequelize.Op;
@@ -73,7 +73,7 @@ class PermissionController {
 				updatedAt:'2017-12-01 10:35:41'
 			}
 			return new Promise((resolve, reject) => {
-				return PermModel.create(newper).then(function(results){
+				return PermPathModel.create(newper).then(function(results){
 					resolve(results.id);
 				},reject)
 			})
@@ -139,7 +139,7 @@ class PermissionController {
 			return [];
 		}
 		
-		let permissions = await PermModel.findAll({
+		let permissions = await PermPathModel.findAll({
 			where: {
 			    id: {
 			      [Op.in]: role.permission.split(',')
@@ -178,7 +178,7 @@ class PermissionController {
 			return [];
 		}
 		
-		let permissions = await PermModel.findAll({
+		let permissions = await PermPathModel.findAll({
 			where: {
 			    id: {
 			      [Op.in]: role.permission.split(',')

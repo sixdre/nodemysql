@@ -1,4 +1,4 @@
-import {UserModel,RoleModel,PermModel,MenuModel} from '../models/'
+import {UserModel,RoleModel,PermPathModel,MenuModel} from '../models/'
 import permissionCtrl from '../controllers/permission'
 import Sequelize from 'sequelize'
 const Op = Sequelize.Op;

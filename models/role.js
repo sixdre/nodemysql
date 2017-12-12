@@ -1,7 +1,7 @@
 //角色表
 export default function (sequelize, DataTypes) {
   	return  sequelize.define(
-	    'sys_role',
+	    'role',
 	    {
 	        name: {
 	            type: DataTypes.STRING, 	// 字段类型

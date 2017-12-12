@@ -1,7 +1,7 @@
 //权限表
 export default function (sequelize, DataTypes) {
   	return  sequelize.define(
-	    'sys_perm',
+	    'permPath',
 	    {
 	        name: {
 	            type: DataTypes.STRING, 

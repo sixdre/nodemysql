@@ -38,7 +38,7 @@ const data={
         },
         {
             "id": 5,
-            "path": "/permission/permission",
+            "path": "/permission/list",
             "name": "权限列表",
             "pid": 4,
             "createdAt":'2017-12-01 10:35:41',
@@ -65,6 +65,15 @@ const data={
         },
         {
             "id": 8,
+            "path": "/permission/allot",
+            "name": "权限分配",
+            "pid": 4,
+            "createdAt":'2017-12-01 10:35:41',
+			"updatedAt":'2017-12-01 10:35:41',
+			"permission": ["add","remove","edit"]
+        },
+        {
+            "id": 9,
             "path": "/users",
             "name": "用户管理",
             "pid": 0,

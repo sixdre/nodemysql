@@ -1,4 +1,4 @@
-import {PermissionModel,MenuModel,RoleModel,PermModel} from '../models/'
+import {PermissionModel,MenuModel,RoleModel,PermPathModel} from '../models/'
 
 import Sequelize from 'sequelize'
 const Op = Sequelize.Op;
@@ -63,6 +63,12 @@ class PermissionController {
 		
 	}
 	
+	//删除权限
+	removePermission(req,res,next){
+		
+	}
+	
+	
 	//获取权限列表
 	async getPermissionList(req,res,next){
 
@@ -96,6 +102,74 @@ class PermissionController {
 			
 		}
 	}
+	
+	//根据角色来获取相应的权限
+	
+	async getPermissionByRoleId(req,res,next){
+		let roleId = req.query['roleId'];
+		if(!roleId){
+			res.json({
+				code:-1,
+				msg:'参数缺失'
+			})
+			return ;
+		}
+		try{
+			let role = await RoleModel.findOne({where:{id:roleId}});
+			let menus = await MenuModel.findAll();
+			menus = JSON.parse(JSON.stringify(menus));
+			let paths =[];
+			let ror=[];
+			let data1=[];
+			let ids=[];
+			if(!role){
+				res.json({
+					code:0,
+					msg:'没有找到该角色'
+				})
+				return ;
+			}
+			
+			let {permission,resource} = role;
+			
+			if(permission){
+				permission = permission.split(',')
+				paths = await PermPathModel.findAll({
+					where: {
+					    id: {
+					      [Op.in]: permission
+					    }
+					}
+				})
+				paths = JSON.parse(JSON.stringify(paths));
+				
+				paths.forEach(item=>{
+					menus.map(s=>{
+						if(s.id==item.menuId){
+							s['permission'] = item.op.split(',')
+						}
+						return s;
+					})
+				})
+				ids = paths.map(item=> Number(item.menuId))
+				data1 = transformTozTreeFormat(menus)
+			}
+			if(resource){
+				resource = resource.split(',')
+			}
+			
+			res.json({
+				ids,
+				data1,
+				resource
+				
+			})
+
+		}catch(err){
+			
+		}
+	}
+	
 	
 	//根据分类获取权限
 	async getMenuToPermission(req,res,next){
@@ -147,7 +221,7 @@ class PermissionController {
 				updatedAt:'2017-12-01 10:35:41'
 			}
 			return new Promise((resolve, reject) => {
-				return PermModel.create(newper).then(function(results){
+				return PermPathModel.create(newper).then(function(results){
 					resolve(results.id);
 				},reject)
 			})
@@ -162,10 +236,11 @@ class PermissionController {
 			code:1,
 			msg:'创建成功'
 		})
-		
-		
-		
+	
 	}
+	
+	
+	
 	
 	
 }

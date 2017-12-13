@@ -122,7 +122,7 @@ class PermissionController {
 	
 	//获取所有的角色
 	async getRoles(req,res,next){
-		let roles = await RoleModel.findAll({where:{super:0}});
+		let roles = await RoleModel.findAll();
 		res.json({
 			code:1,
 			data:roles,
@@ -238,65 +238,7 @@ class PermissionController {
 			data
 		})
 	}
-	//读取权限
-	/*async getPermission(req,res,next){
-		
-		//读取权限表
-		let permission = await PermissionModel.findOne({
-			attributes: ['id', 'mopId']
-		})
-		let permissionIds = permission.mopId.split(',').map(item=> Number(item));
-		
-		//读取菜单操作关联表
-		let menus = await MenuOpeModel.findAll({
-			attributes: ['menuId', 'operateIds'],
-			where: {
-			    id: {
-			      [Op.in]: permissionIds
-			    }
-			}
-		})
-		
-		let Pro = menus.map(item=>{
-			 return new Promise((resolve, reject) => {
-                return OperateModel.findAll({
-                	attributes: ['name'],
-					 where: {
-					    id: {
-					      [Op.in]: item.operateIds.split(',').map(item=> Number(item))
-					    }
-					  }
-				}).then((results)=>{
-					return  MenuModel.findOne({
-						attributes: ['id','path','name','pid'],
-					  	where: {
-					    	id: item.menuId
-					  	}
-					}).then(re=>{
-						let permission = results.map(item=> item.name);
-						let data = {
-							id:re.id,
-							path:re.path,
-							name:re.name,
-							pid:re.pid,
-							permission:permission
-						};
-						resolve(data)
-					})
-				},reject)
-           });
-		})
-		
-		
-		let data1 = await Promise.all(Pro)
-		let pids = data1.map(item=> item.pid);
-		let data = GetData(Math.min.apply( Math, pids), JSON.parse(JSON.stringify(data1)))
-		
-		res.json({
-			data
-		})
-		
-	}*/
+	
 	
 }
 

@@ -89,7 +89,8 @@ function initSqlData(){
 }
 
 
-initSqlData()
+
+// initSqlData()
 
 
 

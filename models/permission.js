@@ -7,7 +7,7 @@ export default function (sequelize, DataTypes) {
 	            type: DataTypes.STRING, 
 	            allowNull: false        	
 	        },
-	        permission:{		
+	        resource:{		
 	        	type: DataTypes.STRING, 
 	            allowNull: false        	
 	        },

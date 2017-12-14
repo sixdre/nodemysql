@@ -68,6 +68,7 @@ const data={
             "path": "/permission/allot",
             "name": "权限分配",
             "pid": 4,
+            "hidden":1,
             "createdAt":'2017-12-01 10:35:41',
 			"updatedAt":'2017-12-01 10:35:41',
 			"permission": ["add","remove","edit"]

@@ -1,92 +1,82 @@
 import {PermissionModel,MenuModel,RoleModel,PermPathModel} from '../models/'
-
 import Sequelize from 'sequelize'
+import transformTozTreeFormat from '../utility/tree'
 const Op = Sequelize.Op;
-
-//生成tree数据
-function transformTozTreeFormat (sNodes) {
-	let setting = {idKey:'id',parentKey:'pid',childKey:'child'};
-    var i, l,
-        key = setting.idKey,
-        parentKey = setting.parentKey,
-        childKey = setting.childKey;
-    if (!key || key == "" || !sNodes) return [];
-
-    if (Array.isArray(sNodes)) {
-        var r = [];
-        var tmpMap = {};
-        for (i = 0, l = sNodes.length; i < l; i++) {
-            tmpMap[sNodes[i][key]] = sNodes[i];
-            if(!sNodes[i].permission) sNodes[i].permission=[]	//my add
-        }
-        for (i = 0, l = sNodes.length; i < l; i++) {
-            if (tmpMap[sNodes[i][parentKey]] && sNodes[i][key] != sNodes[i][parentKey]) {
-                if (!tmpMap[sNodes[i][parentKey]][childKey])
-                    tmpMap[sNodes[i][parentKey]][childKey] = [];
-                tmpMap[sNodes[i][parentKey]][childKey].push(sNodes[i]);
-            } else {
-                r.push(sNodes[i]);
-            }
-        }
-        return r;
-    } else {
-        return [sNodes];
-    }
-}
-
-
 
 class PermissionController {
 	constructor() {
-		this.getPermission = this.getPermission.bind(this)
+		
 	}
 
-	
+	async getMenus(req,res,next){
+		let menus = await MenuModel.findAll();
+		let data = transformTozTreeFormat(JSON.parse(JSON.stringify(menus)))
+		res.json({
+			menus:menus,
+			data
+		})
+	}
 
-
-	//给角色分配权限
-	async createPermissionByRoleId(req,res,next){
-		let pers = req.body.data;
-		let roleId = req.body.roleId;
-		if(!roleId){
-			res.json({
-				code:-1,
-				msg:'参数缺失'
-			})
-			return ;
-		}
-		let role = await RoleModel.findOne({where: {id: roleId}});
-		if(!role){
-			res.json({
-				code:0,
-				msg:'没有找到该角色'
-			})
-			return ;
-		}
-
-		let Pro = pers.map(item=>{
-			let newper={
-				name:'测试权限',
-				menuId:item.id,
-				op:item.permission.join(','),
+	//创建权限
+	async createPermission(req,res,next){
+		try{
+			let obj = {
+				name:req.body['name'],
+				resource:req.body['resource'],
+				type:req.body['type'].join(','),
+				tag:req.body['tag'],
 				createdAt:'2017-12-01 10:35:41',
 				updatedAt:'2017-12-01 10:35:41'
 			}
-			return new Promise((resolve, reject) => {
-				return PermPathModel.create(newper).then(function(results){
-					resolve(results.id);
-				},reject)
+			await PermissionModel.create(obj);
+			res.json({
+				code:1,
+				msg:'权限创建成功'
 			})
-		})
-//		
-		let permission = await Promise.all(Pro);
+		}catch(err){
+			
+		}
 		
-		await RoleModel.update({permission:permission.join(',')},{where:{id: roleId}})
+	}
+	
+	//删除权限
+	removePermission(req,res,next){
 		
-		res.json({
-			code:1,
-			msg:'创建成功'
-		})
+	}
+	
+	
+	//获取权限列表
+	async getPermissionList(req,res,next){
+
+		try{
+			let permissions = await PermissionModel.findAll();
+				permissions = JSON.parse(JSON.stringify(permissions));
+			
+			let Pro = permissions.map(item=>{
+				return new Promise((resolve, reject) => {
+					return  MenuModel.findOne({
+						attributes: ['id','name'],
+					  	where: {
+					    	id: item.tag
+					  	}
+					}).then(re=>{
+						item.tagName = re.name;
+						resolve(item)
+					}).catch(err=>{
+						reject(err)
+					})
+				})
+			})
+			
+			let data = await Promise.all(Pro);
+			res.json({
+				code:1,
+				data,
+				msg:'权限列表获取成功'
+			})
+		}catch(err){
+			
+		}
 	}
 	
 	//创建角色
@@ -112,14 +102,11 @@ class PermissionController {
 				msg:'创建成功'
 			})
 		}catch(err){
-			res.json({
-				code:0,
-				msg:'创建失败'
-			})
+			return next(err);
 		}
-		
 	}
-	
+
+
 	//获取所有的角色
 	async getRoles(req,res,next){
 		let roles = await RoleModel.findAll();
@@ -129,115 +116,136 @@ class PermissionController {
 			msg:'获取成功'
 		})
 	}
-	
 
-	//根据角色的ID来获取当前角色对应的权限
-	async getPermissionByRoleIdForUpdate(req,res,next){
-		let roleId = req.body['roleId'];
-		let role =  await RoleModel.findOne({where: {id: roleId}});
-		if(!role.permission){
-			return [];
-		}
-		
-		let permissions = await PermPathModel.findAll({
-			where: {
-			    id: {
-			      [Op.in]: role.permission.split(',')
-			    }
-			}
-		})
-		permissions = JSON.parse(JSON.stringify(permissions))
-		
-		let menus = await MenuModel.findAll();
-			menus = JSON.parse(JSON.stringify(menus))
-		
-		permissions.forEach(item=>{
-			menus.map(s=>{
-				if(s.id==item.menuId){
-					s['permission'] = item.op.split(',')
-				}
-				return s;
+
+	//根据角色来获取相应的权限
+	
+	async getPermissionByRoleId(req,res,next){
+		let roleId = req.query['roleId'];
+		//let roleId = req.userInfo.roleId;
+		if(!roleId){
+			res.json({
+				code:-1,
+				msg:'参数缺失'
 			})
-		})
-		
-		let ids = permissions.map(item=> Number(item.menuId))
-		
-		let data = transformTozTreeFormat(JSON.parse(JSON.stringify(menus)))
-	
-		res.json({
-			ids,
-			data
-		})
+			return ;
+		}
+		try{
+			let role = await RoleModel.findOne({where:{id:roleId}});
+			if(!role){
+				res.json({
+					code:0,
+					msg:'没有找到该角色'
+				})
+				return ;
+			}
+			let {permission,resource} = role;
+			let menuList=[];
+			
+			if(!resource){
+				resource = [];
+			}else{
+				resource = resource.split(',').map(item=>Number(item));
+			}
+			if(permission){
+				permission = permission.split(',');
+				let paths= await MenuModel.findAll({
+					where: {
+					    id: {
+					      [Op.in]: permission
+					    }
+					}
+				})
+				menuList = transformTozTreeFormat(JSON.parse(JSON.stringify(paths)));
+			}else{
+				permission = [];
+			}
+			
+			
+			res.json({
+				code:1,
+				msg:'角色权限获取成功',
+				menu:{
+					checkIds:permission,
+					list:menuList
+				},
+				resource
+			})
 
+		}catch(err){
+			
+		}
 	}
 	
 	
-	async getPermissionByRoleId(roleId){
-		let role =  await RoleModel.findOne({where: {id: roleId}});
-		if(!role.permission){
-			return [];
-		}
-		
-		let permissions = await PermPathModel.findAll({
-			where: {
-			    id: {
-			      [Op.in]: role.permission.split(',')
-			    }
-			}
-		})
-		let Pro = permissions.map(item=>{
-			return new Promise((resolve, reject) => {
-				return  MenuModel.findOne({
-					attributes: ['id','path','name','pid','hidden','icon'],
-				  	where: {
-				    	id: item.menuId
-				  	}
-				}).then(re=>{
-					let permission = item.op;
-					if(!permission){
-						permission=[]
-					}else{
-						permission = permission.split(',')
-					}
-					re = JSON.parse(JSON.stringify(re))
-					if(re){
-						re.permission=permission
-					}else{
-						re = {};
-					}
-					resolve(re)
-				}).catch(err=>{
-					reject(err)
+	/*
+	 * getMenuToPermission  
+	 * desc(根据分类获取权限,分类从菜单表读取默认读取pid为0的数据) 
+	 * */
+	async getMenuToPermission(req,res,next){
+		try{
+			let menus = await MenuModel.findAll({
+				attributes: ['id','name'],
+				where:{
+					pid:0
+				}
+			});		//一级菜单
+			menus = JSON.parse(JSON.stringify(menus));
+			
+			let Pro = menus.map(item=>{
+				return new Promise((resolve, reject) => {
+					return  PermissionModel.findAll({
+					  	where: {
+					    	tag: item.id
+					  	}
+					}).then(re=>{
+						item.resource = re;
+						resolve(item)
+					}).catch(err=>{
+						reject(err)
+					})
 				})
 			})
-		})
-		
-		let data1 = await Promise.all(Pro);
-		let ids = data1.map(item=> Number(item.id));
-		let data = transformTozTreeFormat(JSON.parse(JSON.stringify(data1)))
-		return {
-			ids,
-			data
-		};
+			
+			let data = await Promise.all(Pro);
+			res.json({
+				code:1,
+				data,
+				msg:'权限列表获取成功'
+			})
+		}catch(err){
+			
+		}
 	}
 	
-	
-	
-	
-	async getPermission(req,res,next){
-		let roleId = req.body['roleId'];
-		let data = await this.getPermissionByRoleId(roleId)
-		res.json(data)
-		
-	}
-	async getMenus(req,res,next){
-		let menus = await MenuModel.findAll();
-		let data = transformTozTreeFormat(JSON.parse(JSON.stringify(menus)))
+	/*
+	 * saveRolePermission  
+	 * desc(保存角色的权限) 
+	 * */
+	async saveRolePermission(req,res,next){
+		let roleId = req.body.roleId;
+		let menus = req.body.menus;
+		let resource = req.body.resource;
+		let role = await RoleModel.findOne({where: {id: roleId}});
+		if(!role){
+			res.json({
+				code:0,
+				msg:'没有找到该角色'
+			})
+			return ;
+		}
+
+		await RoleModel.update({permission:menus.join(','),resource:resource.join(',')},{where:{id: roleId}})
+
 		res.json({
-			menus:menus,
-			data
+			code:1,
+			msg:'创建成功'
 		})
+	
 	}
+	
+	
+	
 	
 	
 }

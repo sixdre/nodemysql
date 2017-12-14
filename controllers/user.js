@@ -44,8 +44,9 @@ class UsersController {
 		}
 	}
 	
+	//创建用户
 	async createUser(req,res,next){
-		let {username,password,roleId=''} = req.body;
+		let {username,password,roleId} = req.body;
 		try{
 			if(validator.isEmpty(username)||validator.isEmpty(password)){
 				return res.json({

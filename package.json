@@ -12,6 +12,7 @@
     "debug": "~2.6.9",
     "ejs": "^2.5.7",
     "express": "~4.15.5",
+    "express-rate-limit": "^2.11.0",
     "jade": "~1.11.0",
     "jsonwebtoken": "^8.1.0",
     "moment": "^2.19.1",

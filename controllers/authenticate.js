@@ -1,7 +1,8 @@
-import {UserModel,RoleModel,PermPathModel,MenuModel} from '../models/'
-import permissionCtrl from '../controllers/permission'
+import {UserModel,RoleModel,MenuModel} from '../models/'
 import Sequelize from 'sequelize'
 import auth from '../middleware/auth'
+import transformTozTreeFormat from '../utility/tree'
+
 const Op = Sequelize.Op;
 
 async function login(req,res,next){
@@ -24,12 +25,20 @@ async function login(req,res,next){
 			msg:'密码错误'
 		})
 	}else{
-		let data = await permissionCtrl.getPermissionByRoleId(user.roleId);
+		let role = await RoleModel.findOne({where:{id:user.roleId}});
+		let data= await MenuModel.findAll({
+			where: {
+			    id: {
+			      [Op.in]: role.permission.split(',')
+			    }
+			}
+		})
+		data = transformTozTreeFormat(JSON.parse(JSON.stringify(data)));
 		var token = auth.setToken(JSON.parse(JSON.stringify(user)))
 		res.json({
 			code:1,
 			msg:'登录成功',
-			data:data.data,
+			data:data,
 			role:user.roleId,
 			token:token
 		})

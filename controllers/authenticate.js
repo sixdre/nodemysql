@@ -13,7 +13,8 @@ async function login(req,res,next){
 			msg:'参数错误'
 		})
 	}
-	let user =  await UserModel.findOne({where: {username: username}})
+	let user =  await UserModel.findOne({
+		attributes:['id','username','password','roleId'],where: {username: username}})
 	if(!user){
 		res.json({
 			code:0,
@@ -26,20 +27,19 @@ async function login(req,res,next){
 		})
 	}else{
 		let role = await RoleModel.findOne({where:{id:user.roleId}});
-		let data= await MenuModel.findAll({
-			where: {
-			    id: {
-			      [Op.in]: role.permission.split(',')
-			    }
-			}
-		})
-		data = transformTozTreeFormat(JSON.parse(JSON.stringify(data)));
-		var token = auth.setToken(JSON.parse(JSON.stringify(user)))
+		user = JSON.parse(JSON.stringify(user));
+		if(!role){
+			user.roleName = '';
+		}
+		user.roleName = role.name;
+		var token = auth.setToken(user)
 		res.json({
 			code:1,
 			msg:'登录成功',
-			data:data,
-			role:user.roleId,
+			role:{
+				name:role.name,
+				id:user.roleId
+			},
 			token:token
 		})
 	}

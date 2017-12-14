@@ -7,7 +7,52 @@ class PermissionController {
 	constructor() {
 		
 	}
+	//获取登录用户的权限
+	async getCurUserPermission(req,res,next){
+		let roleId = req.userInfo.roleId;
+		let role = await RoleModel.findOne({where:{id:roleId}});
+		if(!roleId){
+			return res.json({
+				code:1,
+				data:[]
+			})
+		}
+		
+		try{
+			let role = await RoleModel.findOne({where:{id:roleId}});
+			if(!role){
+				return res.json({
+					code:1,
+					data:[]
+				})
+			}
+			let {permission} = role;
+			let menuList=[];
+			
+			if(permission){
+				permission = permission.split(',');
+				let paths= await MenuModel.findAll({
+					where: {
+					    id: {
+					      [Op.in]: permission
+					    }
+					}
+				})
+				menuList = transformTozTreeFormat(JSON.parse(JSON.stringify(paths)));
+			}
+			
+			res.json({
+				code:1,
+				msg:'角色权限获取成功',
+				data:menuList
+			})
 
+		}catch(err){
+			
+		}
+	}
+	
+	
 	async getMenus(req,res,next){
 		let menus = await MenuModel.findAll();
 		let data = transformTozTreeFormat(JSON.parse(JSON.stringify(menus)))

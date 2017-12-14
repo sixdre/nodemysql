@@ -11,7 +11,7 @@ export default {
 	      	jwt.verify(token, secret , function(err,decoded) {
 		        if(err) {
 		            // 解析失败直接返回失败警告
-		          	return res.json({success:false,msg:'token验证失败'})
+		          	return res.status(401).json({success:false,msg:'token验证失败'})
 		        }else {
 		            //解析成功加入请求信息，继续调用后面方法
 		          	req.userInfo = decoded;
@@ -19,7 +19,7 @@ export default {
 		        }
 	      	})
 	    }else {
-	      	return res.status(403).send({success:false,msg:"token验证失败"})
+	      	return res.status(403).json({success:false,msg:"token验证失败"})
 	    }
 	},
 

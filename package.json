@@ -19,7 +19,8 @@
     "mysql": "^2.15.0",
     "mysql2": "^1.5.1",
     "sequelize": "^4.22.15",
-    "serve-favicon": "~2.4.5"
+    "serve-favicon": "~2.4.5",
+    "validator": "^9.2.0"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",

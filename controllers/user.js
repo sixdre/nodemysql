@@ -1,7 +1,9 @@
+import validator from 'validator'
+import Sequelize from 'sequelize'
 import {UserModel,RoleModel,PermPathModel,MenuModel} from '../models/'
 import permissionCtrl from '../controllers/permission'
-import Sequelize from 'sequelize'
 import auth from '../middleware/auth'
+
 const Op = Sequelize.Op;
 
 class UsersController {
@@ -41,6 +43,37 @@ class UsersController {
 			return next(err);
 		}
 	}
+	
+	async createUser(req,res,next){
+		let {username,password,roleId=''} = req.body;
+		try{
+			if(validator.isEmpty(username)||validator.isEmpty(password)){
+				return res.json({
+					code:0,
+					msg:'用户名密码不得为空'
+				})
+			}
+			let user = await UserModel.findOne({where:{username:username}});
+			if(user){
+				return res.json({
+					code:0,
+					msg:'该用户名已存在'
+				})
+			}
+			await UserModel.create({
+				username,
+				password,
+				roleId
+			});
+			res.json({
+				code:1,
+				msg:'用户创建成功'
+			})
+		}catch(err){
+			return next(err);
+		}
+	}
+	
 	
 	async updateUserRole(req,res,next){
 		let {userId,roleId} = req.body;

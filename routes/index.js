@@ -8,5 +8,5 @@ export default app => {
 	
 	app.use('/api',apiRouter);
 	app.use('/users',auth.checkToken,userRouter);
-	app.use('/permission',auth.checkToken,permissionRouter);
+	app.use('/permission',permissionRouter);
 }

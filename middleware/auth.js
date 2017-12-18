@@ -19,7 +19,7 @@ export default {
 		        }
 	      	})
 	    }else {
-	      	return res.status(403).json({success:false,msg:"token验证失败"})
+	      	return res.status(401).json({success:false,msg:"token验证失败"})
 	    }
 	},
 
@@ -33,16 +33,20 @@ export default {
 
 	async checkRole(req,res,next){
 		let role = await RoleModel.findOne({where:{id:req.userInfo.roleId}});
+		let flag = false;
+		let method = req.method;
 		if(role.resource){
 			let permissionIds = role.resource.split(',');
 			let Pro = permissionIds.map(item=>{
 				return new Promise((resolve, reject) => {
 					return  PermissionModel.findOne({
+						attributes: ['id','name','resource','type'],
 					  	where: {
 					    	id: item
-					  	}
+					  	},
+					  	raw:true
 					}).then(re=>{
-						resolve(re.resource)
+						resolve(re)
 					}).catch(err=>{
 						reject(err)
 					})
@@ -51,11 +55,19 @@ export default {
 			
 			let paths = await Promise.all(Pro);
 			let myUrl = req.baseUrl+req.path;
+			paths.forEach(item=>{
+				if(item.type.toUpperCase()== method){
+					if(item.resource == myUrl||item.resource==(req.baseUrl+req.route.path)){
+						flag = true ;
+						return ;
+					}
+				}
+			})	
 
-			if(paths.indexOf(myUrl)<0){
+			if(!flag){
 				res.sendStatus(403);
+				//res.status(403).json({ msg: '抱歉，您没有权限访问,请与系统管理员联系!' })
 				return ;
-		//		res.status(403).json({ msg: '抱歉，您没有权限访问,请与系统管理员联系!' })
 			}
 			next();
 		}else{

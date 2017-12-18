@@ -26,7 +26,7 @@ async function login(req,res,next){
 			msg:'密码错误'
 		})
 	}else{
-		let role = await RoleModel.findOne({where:{id:user.roleId}});
+		let role = await RoleModel.findById(user.roleId);
 		user = JSON.parse(JSON.stringify(user));
 		if(!role){
 			user.roleName = '';

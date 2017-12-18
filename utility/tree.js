@@ -7,7 +7,7 @@ function transformTozTreeFormat (sNodes) {
         childKey = setting.childKey;
     if (!key || key == "" || !sNodes) return [];
 
-    if (Array.isArray(sNodes)) {
+    if (Array.isArray(sNodes)&&sNodes.length) {
         var r = [];
         var tmpMap = {};
         for (i = 0, l = sNodes.length; i < l; i++) {
@@ -25,7 +25,7 @@ function transformTozTreeFormat (sNodes) {
         }
         return r;
     } else {
-        return [sNodes];
+        return [];
     }
 }
 

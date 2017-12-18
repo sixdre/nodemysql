@@ -1,8 +1,7 @@
 import validator from 'validator'
 import Sequelize from 'sequelize'
-import {UserModel,RoleModel,PermPathModel,MenuModel} from '../models/'
-import permissionCtrl from '../controllers/permission'
-import auth from '../middleware/auth'
+import {UserModel,RoleModel,PermissionModel,MenuModel} from '../models/'
+import transformTozTreeFormat from '../utility/tree'
 
 const Op = Sequelize.Op;
 
@@ -14,11 +13,7 @@ class UsersController {
 				users = JSON.parse(JSON.stringify(users));
 			let Pro = users.map(item=>{
 				return new Promise((resolve, reject) => {
-					return  RoleModel.findOne({
-					  	where: {
-					    	id: item.roleId
-					  	}
-					}).then(re=>{
+					return  RoleModel.findById(item.roleId).then(re=>{
 						if(re){
 							item.roleName = re.name;
 							item.roleSuper = re.super;
@@ -44,6 +39,49 @@ class UsersController {
 		}
 	}
 	
+	//获取当前登录用户信息
+	async getUserInfo(req,res,next){
+		let roleId = req.userInfo.roleId;
+		if(!roleId){
+			return res.json({
+				code:1,
+				data:[]
+			})
+		}
+		try{
+			let role = await RoleModel.findById(roleId);
+			if(!role){
+				return res.json({
+					code:1,
+					data:[]
+				})
+			}
+			let {permission} = role;
+			let data=[];
+			
+			if(permission){
+				permission = permission.split(',');
+				let menuList= await MenuModel.findAll({
+					where: {
+					    id: {
+					      [Op.in]: permission
+					    }
+					},
+					raw:true
+				})
+				data = transformTozTreeFormat(menuList);
+			}
+			res.json({
+				code:1,
+				msg:'角色权限获取成功',
+				data
+			})
+
+		}catch(err){
+			
+		}
+	}
+
 	//创建用户
 	async createUser(req,res,next){
 		let {username,password,roleId} = req.body;

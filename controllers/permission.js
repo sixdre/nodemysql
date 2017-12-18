@@ -3,56 +3,12 @@ import Sequelize from 'sequelize'
 import transformTozTreeFormat from '../utility/tree'
 const Op = Sequelize.Op;
 
+
 class PermissionController {
 	constructor() {
 		
 	}
-	//获取登录用户的权限
-	async getCurUserPermission(req,res,next){
-		let roleId = req.userInfo.roleId;
-		let role = await RoleModel.findOne({where:{id:roleId}});
-		if(!roleId){
-			return res.json({
-				code:1,
-				data:[]
-			})
-		}
-		
-		try{
-			let role = await RoleModel.findOne({where:{id:roleId}});
-			if(!role){
-				return res.json({
-					code:1,
-					data:[]
-				})
-			}
-			let {permission} = role;
-			let menuList=[];
-			
-			if(permission){
-				permission = permission.split(',');
-				let paths= await MenuModel.findAll({
-					where: {
-					    id: {
-					      [Op.in]: permission
-					    }
-					}
-				})
-				menuList = transformTozTreeFormat(JSON.parse(JSON.stringify(paths)));
-			}
-			
-			res.json({
-				code:1,
-				msg:'角色权限获取成功',
-				data:menuList
-			})
-
-		}catch(err){
-			
-		}
-	}
-	
-	
+	//获取前端页面菜单
 	async getMenus(req,res,next){
 		let menus = await MenuModel.findAll();
 		let data = transformTozTreeFormat(JSON.parse(JSON.stringify(menus)))
@@ -92,10 +48,13 @@ class PermissionController {
 	
 	//获取权限列表
 	async getPermissionList(req,res,next){
-
+		let {page=1,limit=5} = req.query;
+			page = Number(page),
+			limit = Number(limit);
 		try{
-			let permissions = await PermissionModel.findAll();
-				permissions = JSON.parse(JSON.stringify(permissions));
+			let results = await PermissionModel.findAndCountAll({limit: limit,offset: (page-1)*limit,raw:true});
+			let permissions = results.rows;
+			let count = results.count;
 			
 			let Pro = permissions.map(item=>{
 				return new Promise((resolve, reject) => {
@@ -117,6 +76,7 @@ class PermissionController {
 			res.json({
 				code:1,
 				data,
+				count,
 				msg:'权限列表获取成功'
 			})
 		}catch(err){
@@ -164,10 +124,8 @@ class PermissionController {
 
 
 	//根据角色来获取相应的权限
-	
 	async getPermissionByRoleId(req,res,next){
 		let roleId = req.query['roleId'];
-		//let roleId = req.userInfo.roleId;
 		if(!roleId){
 			res.json({
 				code:-1,
@@ -176,7 +134,7 @@ class PermissionController {
 			return ;
 		}
 		try{
-			let role = await RoleModel.findOne({where:{id:roleId}});
+			let role = await RoleModel.findById(roleId);
 			if(!role){
 				res.json({
 					code:0,
@@ -271,7 +229,7 @@ class PermissionController {
 		let roleId = req.body.roleId;
 		let menus = req.body.menus;
 		let resource = req.body.resource;
-		let role = await RoleModel.findOne({where: {id: roleId}});
+		let role = await RoleModel.findById(roleId);
 		if(!role){
 			res.json({
 				code:0,

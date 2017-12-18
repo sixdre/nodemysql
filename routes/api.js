@@ -8,12 +8,12 @@ import auth from '../middleware/auth'
 const router = express.Router();
 
 router.post('/login',authenticate);
+//获取当前登录用户信息
 router.get('/users',auth.checkToken,auth.checkRole,UserCtrl.getUsers);
+router.post('/users',auth.checkToken,auth.checkRole,UserCtrl.createUser);
+router.get('/users/info',auth.checkToken,UserCtrl.getUserInfo);
 router.post('/users/role',auth.checkToken,auth.checkRole,UserCtrl.updateUserRole);
-router.post('/users/createUser',auth.checkToken,auth.checkRole,UserCtrl.createUser);
 
-//获取当前登录用户前端显示菜单列表
-router.get('/permission',auth.checkToken,permissionCtrl.getCurUserPermission);
 
 
 router.get('/permission/menus',auth.checkToken,auth.checkRole,permissionCtrl.getMenus);
@@ -24,6 +24,21 @@ router.get('/permission/getPermission',auth.checkToken,auth.checkRole,permission
 router.get('/permission/getPermissionByRoleId',auth.checkToken,permissionCtrl.getPermissionByRoleId);
 router.get('/permission/getMenusPermission',auth.checkToken,auth.checkRole,permissionCtrl.getMenuToPermission);
 router.post('/permission/saveRolePermission',auth.checkToken,auth.checkRole,permissionCtrl.saveRolePermission);
+
+
+
+
+/*RESTful API API*/
+// router.get('/menus',permissionCtrl.getMenus);
+// router.get('/menus/permission',permissionCtrl.getMenuToPermission);
+// router.get('/permissions',permissionCtrl.getPermissionList);
+// router.post('/permissions',permissionCtrl.createPermission);
+// router.get('/roles',permissionCtrl.getRoles);
+// router.get('/roles/:id/permission',permissionCtrl.getPermissionByRoleId);
+// router.post('/roles/:id/permission',permissionCtrl.saveRolePermission);
+// router.post('/roles',permissionCtrl.createRole);
+
+
 
 
 module.exports = router;

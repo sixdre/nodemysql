@@ -8,9 +8,9 @@ import auth from '../middleware/auth'
 const router = express.Router();
 
 router.post('/login',authenticate);
-//获取当前登录用户信息
 router.get('/users',auth.checkToken,auth.checkRole,UserCtrl.getUsers);
 router.post('/users',auth.checkToken,auth.checkRole,UserCtrl.createUser);
+//获取当前登录用户信息
 router.get('/users/info',auth.checkToken,UserCtrl.getUserInfo);
 router.post('/users/role',auth.checkToken,auth.checkRole,UserCtrl.updateUserRole);
 

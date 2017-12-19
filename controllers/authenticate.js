@@ -14,7 +14,7 @@ async function login(req,res,next){
 		})
 	}
 	let user =  await UserModel.findOne({
-		attributes:['id','username','password','roleId'],where: {username: username}})
+		attributes:['id','username','password','roleId'],where: {username: username},raw:true})
 	if(!user){
 		res.json({
 			code:0,
@@ -27,7 +27,6 @@ async function login(req,res,next){
 		})
 	}else{
 		let role = await RoleModel.findById(user.roleId);
-		user = JSON.parse(JSON.stringify(user));
 		if(!role){
 			user.roleName = '';
 		}

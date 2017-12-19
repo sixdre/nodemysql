@@ -1,4 +1,4 @@
-import {PermissionModel,MenuModel,RoleModel,PermPathModel} from '../models/'
+import {PermissionModel,MenuModel,RoleModel} from '../models/'
 import Sequelize from 'sequelize'
 import transformTozTreeFormat from '../utility/tree'
 const Op = Sequelize.Op;
@@ -24,10 +24,8 @@ class PermissionController {
 			let obj = {
 				name:req.body['name'],
 				resource:req.body['resource'],
-				type:req.body['type'].join(','),
-				tag:req.body['tag'],
-				createdAt:'2017-12-01 10:35:41',
-				updatedAt:'2017-12-01 10:35:41'
+				type:req.body['type'],
+				tag:req.body['tag']
 			}
 			await PermissionModel.create(obj);
 			res.json({
@@ -97,9 +95,7 @@ class PermissionController {
 				return ;
 			}
 			let newrole={
-				name,
-				createdAt:'2017-12-01 10:35:41',
-				updatedAt:'2017-12-01 10:35:41'
+				name
 			}
 			await  RoleModel.create(newrole);
 			res.json({
@@ -157,9 +153,10 @@ class PermissionController {
 					    id: {
 					      [Op.in]: permission
 					    }
-					}
+					},
+					raw:true
 				})
-				menuList = transformTozTreeFormat(JSON.parse(JSON.stringify(paths)));
+				menuList = transformTozTreeFormat(paths);
 			}else{
 				permission = [];
 			}
@@ -191,10 +188,10 @@ class PermissionController {
 				attributes: ['id','name'],
 				where:{
 					pid:0
-				}
+				},
+				raw:true
 			});		//一级菜单
-			menus = JSON.parse(JSON.stringify(menus));
-			
+
 			let Pro = menus.map(item=>{
 				return new Promise((resolve, reject) => {
 					return  PermissionModel.findAll({

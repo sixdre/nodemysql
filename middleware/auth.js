@@ -1,8 +1,8 @@
-import {PermissionModel,MenuModel,RoleModel,PermModel,UserModel} from '../models/'
+import {PermissionModel,RoleModel} from '../models/'
 import jwt from 'jsonwebtoken'
 import config from '../config'
-
 const secret = config.secret;
+
 export default {
 	checkToken(req,res,next){
 	 	var token = req.body.token || req.query.token || req.headers['x-access-token'];
@@ -11,7 +11,7 @@ export default {
 	      	jwt.verify(token, secret , function(err,decoded) {
 		        if(err) {
 		            // 解析失败直接返回失败警告
-		          	return res.status(401).json({success:false,msg:'token验证失败'})
+		          	return res.status(401).json({success:false,msg:'token验证失败',err})
 		        }else {
 		            //解析成功加入请求信息，继续调用后面方法
 		          	req.userInfo = decoded;
@@ -24,15 +24,14 @@ export default {
 	},
 
 	setToken(data){
-	 	let jwtSecret = secret;
-	    let token = jwt.sign(data, jwtSecret, {
-	      	expiresIn: 1440 	//24h
+	    let token = jwt.sign(data, secret, {
+	      	expiresIn: '24h' 	//24h
 	    })
 	    return token;
 	},
 
 	async checkRole(req,res,next){
-		let role = await RoleModel.findOne({where:{id:req.userInfo.roleId}});
+		let role = await RoleModel.findById(req.userInfo.roleId);
 		let flag = false;
 		let method = req.method;
 		if(role.resource){
@@ -56,7 +55,7 @@ export default {
 			let paths = await Promise.all(Pro);
 			let myUrl = req.baseUrl+req.path;
 			paths.forEach(item=>{
-				if(item.type.toUpperCase()== method){
+				if(item.type.toUpperCase() == method){
 					if(item.resource == myUrl||item.resource==(req.baseUrl+req.route.path)){
 						flag = true ;
 						return ;

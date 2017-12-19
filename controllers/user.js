@@ -1,6 +1,6 @@
 import validator from 'validator'
 import Sequelize from 'sequelize'
-import {UserModel,RoleModel,PermissionModel,MenuModel} from '../models/'
+import {UserModel,RoleModel,MenuModel} from '../models/'
 import transformTozTreeFormat from '../utility/tree'
 
 const Op = Sequelize.Op;
@@ -9,8 +9,10 @@ class UsersController {
 	//查询所有
 	async getUsers(req,res,next){
 		try{
-			let users = await UserModel.findAll();
-				users = JSON.parse(JSON.stringify(users));
+			let users = await UserModel.findAll({
+				attributes:['id','username','roleId','createdAt','updatedAt'],
+				raw:true
+			});
 			let Pro = users.map(item=>{
 				return new Promise((resolve, reject) => {
 					return  RoleModel.findById(item.roleId).then(re=>{

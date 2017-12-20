@@ -22,7 +22,6 @@ router.get('/permission/roles',auth.checkToken,auth.checkRole,permissionCtrl.get
 router.post('/permission/createPermission',auth.checkToken,auth.checkRole,permissionCtrl.createPermission);
 router.get('/permission/getPermission',auth.checkToken,auth.checkRole,permissionCtrl.getPermissionList);
 router.get('/permission/getPermissionByRoleId',auth.checkToken,permissionCtrl.getPermissionByRoleId);
-router.get('/permission/getMenusPermission',auth.checkToken,auth.checkRole,permissionCtrl.getMenuToPermission);
 router.post('/permission/saveRolePermission',auth.checkToken,auth.checkRole,permissionCtrl.saveRolePermission);
 
 
@@ -30,7 +29,6 @@ router.post('/permission/saveRolePermission',auth.checkToken,auth.checkRole,perm
 
 /*RESTful API API*/
 // router.get('/menus',permissionCtrl.getMenus);
-// router.get('/menus/permission',permissionCtrl.getMenuToPermission);
 // router.get('/permissions',permissionCtrl.getPermissionList);
 // router.post('/permissions',permissionCtrl.createPermission);
 // router.get('/roles',permissionCtrl.getRoles);

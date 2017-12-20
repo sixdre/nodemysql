@@ -46,39 +46,76 @@ class PermissionController {
 	
 	//获取权限列表
 	async getPermissionList(req,res,next){
-		let {page=1,limit=5} = req.query;
+		let {page=1,limit=5,group=0} = req.query;
 			page = Number(page),
 			limit = Number(limit);
-		try{
-			let results = await PermissionModel.findAndCountAll({limit: limit,offset: (page-1)*limit,raw:true});
-			let permissions = results.rows;
-			let count = results.count;
-			
-			let Pro = permissions.map(item=>{
-				return new Promise((resolve, reject) => {
-					return  MenuModel.findOne({
-						attributes: ['id','name'],
-					  	where: {
-					    	id: item.tag
-					  	}
-					}).then(re=>{
-						item.tagName = re.name;
-						resolve(item)
-					}).catch(err=>{
-						reject(err)
+		
+		if(group=='0'){			
+			try{
+				let results = await PermissionModel.findAndCountAll({limit: limit,offset: (page-1)*limit,raw:true});
+				let permissions = results.rows;
+				let count = results.count;
+				
+				let Pro = permissions.map(item=>{
+					return new Promise((resolve, reject) => {
+						return  MenuModel.findOne({
+							attributes: ['id','name'],
+						  	where: {
+						    	id: item.tag
+						  	}
+						}).then(re=>{
+							item.tagName = re.name;
+							resolve(item)
+						}).catch(err=>{
+							reject(err)
+						})
 					})
 				})
-			})
-			
-			let data = await Promise.all(Pro);
-			res.json({
-				code:1,
-				data,
-				count,
-				msg:'权限列表获取成功'
-			})
-		}catch(err){
-			
+				
+				let data = await Promise.all(Pro);
+				res.json({
+					code:1,
+					data,
+					count,
+					msg:'权限列表获取成功'
+				})
+			}catch(err){
+				
+			}
+		}else{			//根据tag 进行分类
+			try{
+				let menus = await MenuModel.findAll({
+					attributes: ['id','name'],
+					where:{
+						pid:0
+					},
+					raw:true
+				});		//一级菜单
+	
+				let Pro = menus.map(item=>{
+					return new Promise((resolve, reject) => {
+						return  PermissionModel.findAll({
+						  	where: {
+						    	tag: item.id
+						  	}
+						}).then(re=>{
+							item.resource = re;
+							resolve(item)
+						}).catch(err=>{
+							reject(err)
+						})
+					})
+				})
+				
+				let data = await Promise.all(Pro);
+				res.json({
+					code:1,
+					data,
+					msg:'权限列表获取成功'
+				})
+			}catch(err){
+				
+			}
 		}
 	}
 	
@@ -138,7 +175,7 @@ class PermissionController {
 				})
 				return ;
 			}
-			let {permission,resource} = role;
+			let {menuIds,resource} = role;
 			let menuList=[];
 			
 			if(!resource){
@@ -146,19 +183,19 @@ class PermissionController {
 			}else{
 				resource = resource.split(',').map(item=>Number(item));
 			}
-			if(permission){
-				permission = permission.split(',');
+			if(menuIds){
+				menuIds = menuIds.split(',');
 				let paths= await MenuModel.findAll({
 					where: {
 					    id: {
-					      [Op.in]: permission
+					      [Op.in]: menuIds
 					    }
 					},
 					raw:true
 				})
 				menuList = transformTozTreeFormat(paths);
 			}else{
-				permission = [];
+				menuIds = [];
 			}
 			
 			
@@ -166,53 +203,12 @@ class PermissionController {
 				code:1,
 				msg:'角色权限获取成功',
 				menu:{
-					checkIds:permission,
+					checkIds:menuIds,
 					list:menuList
 				},
 				resource
 			})
 
-		}catch(err){
-			
-		}
-	}
-	
-	
-	/*
-	 * getMenuToPermission  
-	 * desc(根据分类获取权限,分类从菜单表读取默认读取pid为0的数据) 
-	 * */
-	async getMenuToPermission(req,res,next){
-		try{
-			let menus = await MenuModel.findAll({
-				attributes: ['id','name'],
-				where:{
-					pid:0
-				},
-				raw:true
-			});		//一级菜单
-
-			let Pro = menus.map(item=>{
-				return new Promise((resolve, reject) => {
-					return  PermissionModel.findAll({
-					  	where: {
-					    	tag: item.id
-					  	}
-					}).then(re=>{
-						item.resource = re;
-						resolve(item)
-					}).catch(err=>{
-						reject(err)
-					})
-				})
-			})
-			
-			let data = await Promise.all(Pro);
-			res.json({
-				code:1,
-				data,
-				msg:'权限列表获取成功'
-			})
 		}catch(err){
 			
 		}
@@ -235,7 +231,7 @@ class PermissionController {
 			return ;
 		}
 
-		await RoleModel.update({permission:menus.join(','),resource:resource.join(',')},{where:{id: roleId}})
+		await RoleModel.update({menuIds:menus.join(','),resource:resource.join(',')},{where:{id: roleId}})
 
 		res.json({
 			code:1,

@@ -17,8 +17,11 @@ export const UserModel  = sequelize.import('./user.js');
 export const MenuModel  = sequelize.import('./menu.js');
 export const RoleModel  = sequelize.import('./role.js');
 export const PermissionModel  = sequelize.import('./permission.js');
-//UserModel.hasOne(UserModel);
-//UserModel.belongsTo(UserModel);
+
+//PermissionModel.belongsTo(MenuModel);
 
 
 
+//sequelize.sync({force: true});
+
+//{force: false}

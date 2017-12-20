@@ -8,11 +8,19 @@ const Op = Sequelize.Op;
 class UsersController {
 	//查询所有
 	async getUsers(req,res,next){
+		let {page=1,limit=5,group=0} = req.query;
+			page = Number(page),
+			limit = Number(limit);
 		try{
-			let users = await UserModel.findAll({
+			let results = await UserModel.findAndCountAll({
 				attributes:['id','username','roleId','createdAt','updatedAt'],
+				limit: limit,
+				offset: (page-1)*limit,
 				raw:true
 			});
+			let users = results.rows;
+			let count = results.count;
+			
 			let Pro = users.map(item=>{
 				return new Promise((resolve, reject) => {
 					return  RoleModel.findById(item.roleId).then(re=>{
@@ -32,7 +40,8 @@ class UsersController {
 			let data = await Promise.all(Pro);
 			res.json({
 				code:1,
-				data
+				data,
+				count
 			})
 
 		}catch(err){
@@ -58,15 +67,15 @@ class UsersController {
 					data:[]
 				})
 			}
-			let {permission} = role;
+			let {menuIds} = role;
 			let data=[];
 			
-			if(permission){
-				permission = permission.split(',');
+			if(menuIds){
+				menuIds = menuIds.split(',');
 				let menuList= await MenuModel.findAll({
 					where: {
 					    id: {
-					      [Op.in]: permission
+					      [Op.in]: menuIds
 					    }
 					},
 					raw:true

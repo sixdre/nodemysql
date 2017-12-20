@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50717
 File Encoding         : 65001
 
-Date: 2017-12-14 13:13:58
+Date: 2017-12-20 12:15:29
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -68,11 +68,10 @@ INSERT INTO `permissions` VALUES ('3', '获取角色列表', '/api/permission/ro
 INSERT INTO `permissions` VALUES ('4', '创建权限', '/api/permission/createPermission', 'post', '4', '2017-12-01 02:35:41', '2017-12-14 03:47:23');
 INSERT INTO `permissions` VALUES ('5', '获取权限列表', '/api/permission/getPermission', 'get', '4', '2017-12-01 02:35:41', '2017-12-14 03:47:40');
 INSERT INTO `permissions` VALUES ('6', '获取角色的权限', '/api/permission/getPermissionByRoleId', 'get', '4', '2017-12-01 02:35:41', '2017-12-14 03:47:52');
-INSERT INTO `permissions` VALUES ('7', '获取菜单分类的权限', '/api/permission/getMenusPermission', 'get', '4', '2017-12-01 02:35:41', '2017-12-14 03:48:19');
-INSERT INTO `permissions` VALUES ('8', '给角色分配权限', '/api/permission/saveRolePermission', 'post', '4', '2017-12-01 02:35:41', '2017-12-14 03:49:03');
-INSERT INTO `permissions` VALUES ('9', '获取用户列表', '/api/users', 'get', '9', '2017-12-01 02:35:41', '2017-12-14 05:10:41');
-INSERT INTO `permissions` VALUES ('10', '创建用户', '/api/users/createUser', 'post', '9', '2017-12-01 02:35:41', '2017-12-14 05:11:29');
-INSERT INTO `permissions` VALUES ('11', '用户角色分配', '/api/users/role', 'post', '9', '2017-12-01 02:35:41', '2017-12-14 05:11:48');
+INSERT INTO `permissions` VALUES ('7', '给角色分配权限', '/api/permission/saveRolePermission', 'post', '4', '2017-12-01 02:35:41', '2017-12-14 03:49:03');
+INSERT INTO `permissions` VALUES ('8', '获取用户列表', '/api/users', 'get', '9', '2017-12-01 02:35:41', '2017-12-14 05:10:41');
+INSERT INTO `permissions` VALUES ('9', '创建用户', '/api/users/createUser', 'post', '9', '2017-12-01 02:35:41', '2017-12-14 05:11:29');
+INSERT INTO `permissions` VALUES ('10', '用户角色分配', '/api/users/role', 'post', '9', '2017-12-01 02:35:41', '2017-12-14 05:11:48');
 
 -- ----------------------------
 -- Table structure for `roles`
@@ -81,7 +80,7 @@ DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `permission` varchar(255) DEFAULT NULL,
+  `menuIds` varchar(255) DEFAULT NULL,
   `resource` varchar(255) DEFAULT NULL,
   `super` tinyint(1) NOT NULL DEFAULT '0',
   `createdAt` datetime NOT NULL,
@@ -92,7 +91,7 @@ CREATE TABLE `roles` (
 -- ----------------------------
 -- Records of roles
 -- ----------------------------
-INSERT INTO `roles` VALUES ('1', '超级管理员', '1,2,3,4,5,6,7,8,9', '1,2,3,4,5,6,7,8,9,10,11', '1', '2017-12-01 02:35:41', '2017-12-14 03:29:23');
+INSERT INTO `roles` VALUES ('1', '超级管理员', '1,2,3,4,5,6,7,8,9', '1,2,3,4,5,6,7,8,9,10', '1', '2017-12-01 02:35:41', '2017-12-14 03:29:23');
 INSERT INTO `roles` VALUES ('2', '管理员', '4,5,6,7,8', '1,2,3,4,5,6,7,8', '0', '2017-12-01 02:35:41', '2017-12-14 03:52:05');
 
 -- ----------------------------

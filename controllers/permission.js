@@ -10,12 +10,16 @@ class PermissionController {
 	}
 	//获取前端页面菜单
 	async getMenus(req,res,next){
-		let menus = await MenuModel.findAll();
-		let data = transformTozTreeFormat(JSON.parse(JSON.stringify(menus)))
-		res.json({
-			menus:menus,
-			data
-		})
+		try{
+			let menus = await MenuModel.findAll();
+			let data = transformTozTreeFormat(JSON.parse(JSON.stringify(menus)))
+			res.json({
+				menus:menus,
+				data
+			})
+		}catch(err){
+			return next(err);
+		}
 	}
 
 	//创建权限
@@ -33,7 +37,7 @@ class PermissionController {
 				msg:'权限创建成功'
 			})
 		}catch(err){
-			
+			return next(err);
 		}
 		
 	}
@@ -49,9 +53,8 @@ class PermissionController {
 		let {page=1,limit=5,group=0} = req.query;
 			page = Number(page),
 			limit = Number(limit);
-		
-		if(group=='0'){			
-			try{
+		try{
+			if(group=='0'){			
 				let results = await PermissionModel.findAndCountAll({limit: limit,offset: (page-1)*limit,raw:true});
 				let permissions = results.rows;
 				let count = results.count;
@@ -79,11 +82,7 @@ class PermissionController {
 					count,
 					msg:'权限列表获取成功'
 				})
-			}catch(err){
-				
-			}
-		}else{			//根据tag 进行分类
-			try{
+			}else{
 				let menus = await MenuModel.findAll({
 					attributes: ['id','name'],
 					where:{
@@ -113,9 +112,9 @@ class PermissionController {
 					data,
 					msg:'权限列表获取成功'
 				})
-			}catch(err){
-				
 			}
+		}catch(err){
+			return next(err);
 		}
 	}
 	
@@ -147,12 +146,16 @@ class PermissionController {
 
 	//获取所有的角色
 	async getRoles(req,res,next){
-		let roles = await RoleModel.findAll();
-		res.json({
-			code:1,
-			data:roles,
-			msg:'获取成功'
-		})
+		try{
+			let roles = await RoleModel.findAll();
+			res.json({
+				code:1,
+				data:roles,
+				msg:'获取成功'
+			})
+		}catch(err){
+			return next(err);
+		}
 	}
 
 
@@ -197,8 +200,6 @@ class PermissionController {
 			}else{
 				menuIds = [];
 			}
-			
-			
 			res.json({
 				code:1,
 				msg:'角色权限获取成功',
@@ -210,7 +211,7 @@ class PermissionController {
 			})
 
 		}catch(err){
-			
+			return next(err);
 		}
 	}
 	
@@ -230,19 +231,17 @@ class PermissionController {
 			})
 			return ;
 		}
+		try{
+			await RoleModel.update({menuIds:menus.join(','),resource:resource.join(',')},{where:{id: roleId}})
 
-		await RoleModel.update({menuIds:menus.join(','),resource:resource.join(',')},{where:{id: roleId}})
-
-		res.json({
-			code:1,
-			msg:'创建成功'
-		})
-	
+			res.json({
+				code:1,
+				msg:'创建成功'
+			})
+		}catch(err){
+			return next(err);
+		}
 	}
-	
-	
-	
-	
 	
 }
 

@@ -13,7 +13,7 @@ router.post('/users',auth.checkToken,auth.checkRole,UserCtrl.createUser);
 //获取当前登录用户信息
 router.get('/users/info',auth.checkToken,UserCtrl.getUserInfo);
 router.post('/users/role',auth.checkToken,auth.checkRole,UserCtrl.updateUserRole);
-
+router.delete('/users/:id',auth.checkToken,auth.checkRole,UserCtrl.removeUser);
 
 
 router.get('/permission/menus',auth.checkToken,auth.checkRole,permissionCtrl.getMenus);

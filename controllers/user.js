@@ -89,7 +89,7 @@ class UsersController {
 			})
 
 		}catch(err){
-			
+			return next(err);
 		}
 	}
 
@@ -101,6 +101,14 @@ class UsersController {
 				return res.json({
 					code:0,
 					msg:'用户名密码不得为空'
+				})
+			}
+			let role = await RoleModel.findById(roleId)
+
+			if(role&&role.super){
+				return res.json({
+					code:0,
+					msg:'超级管理员用户已存在不可重复创建'
 				})
 			}
 			let user = await UserModel.findOne({where:{username:username}});
@@ -124,6 +132,40 @@ class UsersController {
 		}
 	}
 	
+	//删除用户
+	async removeUser(req,res,next){
+		let ids = req.params['id'].split(',');
+		let msg = '删除成功';
+
+		if(ids.indexOf('1')!==-1&&ids.length>1){		//这里默认超级管理员用户id为1，超级管理员用户不可删除
+			msg += ',超级管理员用户不可删除'
+		}else if(ids.indexOf('1')!==-1&&ids.length==1){
+			msg = '超级管理员用户不可删除';
+			return res.json({
+				code:0,
+				msg
+			})
+		}
+		let newIds = ids.filter(item=>{		
+			return !(item==1);
+		})
+		
+		try{
+			await UserModel.destroy({
+				where:{
+					'id':{ 
+						[Op.in]: newIds
+					}
+				}
+			})
+			res.json({
+				code:1,
+				msg
+			})
+		}catch(err){
+			return next(err);
+		}
+	}
 	
 	async updateUserRole(req,res,next){
 		let {userId,roleId} = req.body;
@@ -134,6 +176,13 @@ class UsersController {
 			})
 		}
 		try{
+			let role = await RoleModel.findById(roleId)
+			if(role&&role.super){
+				return res.json({
+					code:0,
+					msg:'超级管理员用户已存在不可重复创建'
+				})
+			}
 			await UserModel.update({roleId:roleId},{where:{id: userId}});
 			res.json({
 				code:1,

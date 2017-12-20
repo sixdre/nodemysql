@@ -73,23 +73,5 @@ export default {
 			res.sendStatus(403);
 			//next()
 		}
-
-	
-		//next();
-
-
-
-
-//		console.log(req.route.path);
-//		console.log(req.originalUrl)
-//		console.log(req.path)
-//		console.log(req.route)
-//		console.log(req.baseUrl)
-//		console.log(req.path)
-		
-//		console.log(req.baseUrl+req.path);
-//		console.log(req.method)
-		
-
 	}
 }

@@ -13,35 +13,40 @@ async function login(req,res,next){
 			msg:'参数错误'
 		})
 	}
-	let user =  await UserModel.findOne({
-		attributes:['id','username','password','roleId'],where: {username: username},raw:true})
-	if(!user){
-		res.json({
-			code:0,
-			msg:'该用户不存在'
-		})
-	}else if(user.password!==password){
-		res.json({
-			code:0,
-			msg:'密码错误'
-		})
-	}else{
-		let role = await RoleModel.findById(user.roleId);
-		if(!role){
-			user.roleName = '';
+	try{
+		let user =  await UserModel.findOne({
+			attributes:['id','username','password','roleId'],where: {username: username},raw:true})
+		if(!user){
+			res.json({
+				code:0,
+				msg:'该用户不存在'
+			})
+		}else if(user.password!==password){
+			res.json({
+				code:0,
+				msg:'密码错误'
+			})
+		}else{
+			let role = await RoleModel.findById(user.roleId);
+			if(!role){
+				user.roleName = '';
+			}
+			user.roleName = role.name;
+			var token = auth.setToken(user)
+			res.json({
+				code:1,
+				msg:'登录成功',
+				role:{
+					name:role.name,
+					id:user.roleId
+				},
+				token:token
+			})
 		}
-		user.roleName = role.name;
-		var token = auth.setToken(user)
-		res.json({
-			code:1,
-			msg:'登录成功',
-			role:{
-				name:role.name,
-				id:user.roleId
-			},
-			token:token
-		})
+	}catch(err){
+		return next(err);
 	}
+	
 }
 	
 

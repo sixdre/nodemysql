@@ -53,6 +53,12 @@ class UsersController {
 	//获取当前登录用户信息
 	async getUserInfo(req,res,next){
 		let roleId = req.userInfo.roleId;
+		let userInfo = {
+			id:req.userInfo.id,
+			username:req.userInfo.username,
+			roleId:req.userInfo.roleId,
+			roleName:req.userInfo.roleName
+		}
 		if(!roleId){
 			return res.json({
 				code:1,
@@ -68,11 +74,10 @@ class UsersController {
 				})
 			}
 			let {menuIds} = role;
-			let data=[];
-			
+			let menuList=[];
 			if(menuIds){
 				menuIds = menuIds.split(',');
-				let menuList= await MenuModel.findAll({
+				let data = await MenuModel.findAll({
 					where: {
 					    id: {
 					      [Op.in]: menuIds
@@ -80,12 +85,13 @@ class UsersController {
 					},
 					raw:true
 				})
-				data = transformTozTreeFormat(menuList);
+				menuList = transformTozTreeFormat(data);
 			}
 			res.json({
 				code:1,
-				msg:'角色权限获取成功',
-				data
+				menuList,
+				userInfo,
+				msg:'用户信息获取成功'
 			})
 
 		}catch(err){

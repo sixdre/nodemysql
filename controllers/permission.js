@@ -25,17 +25,26 @@ class PermissionController {
 	//创建权限
 	async createPermission(req,res,next){
 		try{
-			let obj = {
-				name:req.body['name'],
-				resource:req.body['resource'],
-				type:req.body['type'],
-				tag:req.body['tag']
+			let {id,name,resource,type,tag} = req.body;
+			let obj = {		//创建
+				name,
+				resource,
+				type,
+				tag
 			}
-			await PermissionModel.create(obj);
-			res.json({
-				code:1,
-				msg:'权限创建成功'
-			})
+			if(id){				//更新
+				await PermissionModel.update(obj,{where:{id:id}});
+				res.json({
+					code:1,
+					msg:'权限更新成功'
+				})
+			}else{
+				await PermissionModel.create(obj);
+				res.json({
+					code:1,
+					msg:'权限创建成功'
+				})
+			}
 		}catch(err){
 			return next(err);
 		}
@@ -55,7 +64,7 @@ class PermissionController {
 			limit = Number(limit);
 		try{
 			if(group=='0'){			
-				let results = await PermissionModel.findAndCountAll({limit: limit,offset: (page-1)*limit,raw:true});
+				let results = await PermissionModel.findAndCountAll({limit: limit,offset: (page-1)*limit,order:[ ['id', 'DESC'],],raw:true});
 				let permissions = results.rows;
 				let count = results.count;
 				

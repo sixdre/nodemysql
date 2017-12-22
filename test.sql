@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50717
 File Encoding         : 65001
 
-Date: 2017-12-20 17:31:31
+Date: 2017-12-22 10:08:05
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -57,7 +57,7 @@ CREATE TABLE `permissions` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of permissions
@@ -87,13 +87,14 @@ CREATE TABLE `roles` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of roles
 -- ----------------------------
 INSERT INTO `roles` VALUES ('1', '超级管理员', '1,2,3,4,5,6,7,8,9', '1,2,3,4,5,6,7,8,9,10,11', '1', '2017-12-01 02:35:41', '2017-12-20 07:26:45');
-INSERT INTO `roles` VALUES ('2', '管理员', '4,5,6,7,8', '1,2,3,4,5,6,7,8', '0', '2017-12-01 02:35:41', '2017-12-14 03:52:05');
+INSERT INTO `roles` VALUES ('2', '管理员', '4,5,6,7,8,9', '1,2,3,4,5,6,7,8', '0', '2017-12-01 02:35:41', '2017-12-21 07:26:29');
+INSERT INTO `roles` VALUES ('3', '访客', '1,2,3,4,5,6,7,8,9', '1,3,5,6,8', '0', '2017-12-22 01:21:42', '2017-12-22 01:22:20');
 
 -- ----------------------------
 -- Table structure for `users`
@@ -107,11 +108,11 @@ CREATE TABLE `users` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', 'admin', '123', '1', '2017-12-01 02:35:41', '2017-12-01 03:29:23');
-INSERT INTO `users` VALUES ('2', 'test', '123', '2', '2017-12-01 09:24:58', '2017-12-01 09:25:08');
-INSERT INTO `users` VALUES ('3', 'benbenwll', '123', '2', '2017-12-02 17:27:19', '2017-12-02 17:27:22');
+INSERT INTO `users` VALUES ('1', 'admin', '202cb962ac59075b964b07152d234b70', '1', '2017-12-01 02:35:41', '2017-12-01 03:29:23');
+INSERT INTO `users` VALUES ('2', 'test', '202cb962ac59075b964b07152d234b70', '3', '2017-12-01 09:24:58', '2017-12-01 09:25:08');
+INSERT INTO `users` VALUES ('3', 'benbenwll', '202cb962ac59075b964b07152d234b70', '2', '2017-12-02 17:27:19', '2017-12-02 17:27:22');

@@ -1,8 +1,8 @@
 import validator from 'validator'
 import Sequelize from 'sequelize'
-import {UserModel,RoleModel,MenuModel} from '../models/'
+import crypto from "crypto"
+import {UserModel,RoleModel,MenuModel,PermissionModel} from '../models/'
 import transformTozTreeFormat from '../utility/tree'
-
 const Op = Sequelize.Op;
 
 class UsersController {
@@ -62,7 +62,9 @@ class UsersController {
 		if(!roleId){
 			return res.json({
 				code:1,
-				data:[]
+				userInfo,
+				menuList:[],
+				permissions:[]
 			})
 		}
 		try{
@@ -70,11 +72,15 @@ class UsersController {
 			if(!role){
 				return res.json({
 					code:1,
-					data:[]
+					userInfo,
+					menuList:[],
+					permissions:[]
 				})
 			}
-			let {menuIds} = role;
+			
+			let {menuIds,resource} = role;
 			let menuList=[];
+			let permissionList=[];
 			if(menuIds){
 				menuIds = menuIds.split(',');
 				let data = await MenuModel.findAll({
@@ -87,10 +93,25 @@ class UsersController {
 				})
 				menuList = transformTozTreeFormat(data);
 			}
+			if(resource){
+				resource = resource.split(',');
+				permissionList = await PermissionModel.findAll({
+					attributes:['resource','type'],
+					where: {
+					    id: {
+					      [Op.in]: resource
+					    }
+					},
+					raw:true
+				})
+				
+			}
+			
 			res.json({
 				code:1,
 				menuList,
 				userInfo,
+				permissions:permissionList,
 				msg:'用户信息获取成功'
 			})
 
@@ -102,6 +123,7 @@ class UsersController {
 	//创建用户
 	async createUser(req,res,next){
 		let {username,password,roleId} = req.body;
+   		const md5 = crypto.createHash("md5");
 		try{
 			if(validator.isEmpty(username)||validator.isEmpty(password)){
 				return res.json({
@@ -124,9 +146,10 @@ class UsersController {
 					msg:'该用户名已存在'
 				})
 			}
+			let newPas = md5.update(password).digest("hex");
 			await UserModel.create({
 				username,
-				password,
+				password:newPas,
 				roleId
 			});
 			res.json({

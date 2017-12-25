@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50717
 File Encoding         : 65001
 
-Date: 2017-12-22 10:08:05
+Date: 2017-12-25 15:45:41
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -57,22 +57,24 @@ CREATE TABLE `permissions` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of permissions
 -- ----------------------------
 INSERT INTO `permissions` VALUES ('1', '获取菜单', '/api/permission/menus', 'get', '4', '2017-12-01 02:35:41', '2017-12-14 03:38:12');
-INSERT INTO `permissions` VALUES ('2', '创建角色', '/api/permission/createRole', 'post', '4', '2017-12-01 02:35:41', '2017-12-14 03:46:19');
-INSERT INTO `permissions` VALUES ('3', '获取角色列表', '/api/permission/roles', 'get', '4', '2017-12-01 02:35:41', '2017-12-14 03:47:06');
+INSERT INTO `permissions` VALUES ('2', '创建菜单', '/api/permission/createMenu', 'post', '4', '2017-12-25 05:27:39', '2017-12-25 05:27:39');
+INSERT INTO `permissions` VALUES ('3', '删除菜单', '/api/permission/menus/:id', 'delete', '4', '2017-12-25 07:17:10', '2017-12-25 07:17:10');
 INSERT INTO `permissions` VALUES ('4', '创建权限', '/api/permission/createPermission', 'post', '4', '2017-12-01 02:35:41', '2017-12-14 03:47:23');
 INSERT INTO `permissions` VALUES ('5', '获取权限列表', '/api/permission/getPermission', 'get', '4', '2017-12-01 02:35:41', '2017-12-14 03:47:40');
-INSERT INTO `permissions` VALUES ('6', '获取角色的权限', '/api/permission/getPermissionByRoleId', 'get', '4', '2017-12-01 02:35:41', '2017-12-14 03:47:52');
-INSERT INTO `permissions` VALUES ('7', '给角色分配权限', '/api/permission/saveRolePermission', 'post', '4', '2017-12-01 02:35:41', '2017-12-14 03:49:03');
-INSERT INTO `permissions` VALUES ('8', '获取用户列表', '/api/users', 'get', '9', '2017-12-01 02:35:41', '2017-12-14 05:10:41');
-INSERT INTO `permissions` VALUES ('9', '创建用户', '/api/users', 'post', '9', '2017-12-01 02:35:41', '2017-12-14 05:11:29');
-INSERT INTO `permissions` VALUES ('10', '用户角色分配', '/api/users/role', 'post', '9', '2017-12-01 02:35:41', '2017-12-14 05:11:48');
-INSERT INTO `permissions` VALUES ('11', '删除用户', '/api/users/:id', 'delete', '9', '2017-12-20 07:26:32', '2017-12-20 07:26:32');
+INSERT INTO `permissions` VALUES ('6', '获取角色列表', '/api/permission/roles', 'get', '4', '2017-12-01 02:35:41', '2017-12-14 03:47:06');
+INSERT INTO `permissions` VALUES ('7', '创建角色', '/api/permission/createRole', 'post', '4', '2017-12-01 02:35:41', '2017-12-14 03:46:19');
+INSERT INTO `permissions` VALUES ('8', '获取角色的权限', '/api/permission/getPermissionByRoleId', 'get', '4', '2017-12-01 02:35:41', '2017-12-14 03:47:52');
+INSERT INTO `permissions` VALUES ('9', '给角色分配权限', '/api/permission/saveRolePermission', 'post', '4', '2017-12-01 02:35:41', '2017-12-14 03:49:03');
+INSERT INTO `permissions` VALUES ('10', '获取用户列表', '/api/users', 'get', '9', '2017-12-01 02:35:41', '2017-12-14 05:10:41');
+INSERT INTO `permissions` VALUES ('11', '创建用户', '/api/users', 'post', '9', '2017-12-01 02:35:41', '2017-12-14 05:11:29');
+INSERT INTO `permissions` VALUES ('12', '删除用户', '/api/users/:id', 'delete', '9', '2017-12-20 07:26:32', '2017-12-20 07:26:32');
+INSERT INTO `permissions` VALUES ('13', '用户角色分配', '/api/users/role', 'post', '9', '2017-12-01 02:35:41', '2017-12-14 05:11:48');
 
 -- ----------------------------
 -- Table structure for `roles`
@@ -92,9 +94,9 @@ CREATE TABLE `roles` (
 -- ----------------------------
 -- Records of roles
 -- ----------------------------
-INSERT INTO `roles` VALUES ('1', '超级管理员', '1,2,3,4,5,6,7,8,9', '1,2,3,4,5,6,7,8,9,10,11', '1', '2017-12-01 02:35:41', '2017-12-20 07:26:45');
-INSERT INTO `roles` VALUES ('2', '管理员', '4,5,6,7,8,9', '1,2,3,4,5,6,7,8', '0', '2017-12-01 02:35:41', '2017-12-21 07:26:29');
-INSERT INTO `roles` VALUES ('3', '访客', '1,2,3,4,5,6,7,8,9', '1,3,5,6,8', '0', '2017-12-22 01:21:42', '2017-12-22 01:22:20');
+INSERT INTO `roles` VALUES ('1', '超级管理员', '1,2,3,4,5,6,7,8,9', '1,2,3,4,5,6,7,8,9,10,11,12,13', '1', '2017-12-01 02:35:41', '2017-12-25 07:36:41');
+INSERT INTO `roles` VALUES ('2', '管理员', '4,5,6,7,8,9', '1,2,3,4,5,6,7,8,9,10,11,12,13', '0', '2017-12-01 02:35:41', '2017-12-25 07:36:53');
+INSERT INTO `roles` VALUES ('3', '访客', '1,2,3,4,5,6,7,8,9', '1,5,6,8,10', '0', '2017-12-22 01:21:42', '2017-12-25 07:44:42');
 
 -- ----------------------------
 -- Table structure for `users`
@@ -114,5 +116,5 @@ CREATE TABLE `users` (
 -- Records of users
 -- ----------------------------
 INSERT INTO `users` VALUES ('1', 'admin', '202cb962ac59075b964b07152d234b70', '1', '2017-12-01 02:35:41', '2017-12-01 03:29:23');
-INSERT INTO `users` VALUES ('2', 'test', '202cb962ac59075b964b07152d234b70', '3', '2017-12-01 09:24:58', '2017-12-01 09:25:08');
+INSERT INTO `users` VALUES ('2', 'test', '202cb962ac59075b964b07152d234b70', '3', '2017-12-01 09:24:58', '2017-12-22 02:31:01');
 INSERT INTO `users` VALUES ('3', 'benbenwll', '202cb962ac59075b964b07152d234b70', '2', '2017-12-02 17:27:19', '2017-12-02 17:27:22');

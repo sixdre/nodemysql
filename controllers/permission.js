@@ -1,4 +1,5 @@
 import {PermissionModel,MenuModel,RoleModel} from '../models/'
+import validator from 'validator'
 import Sequelize from 'sequelize'
 import transformTozTreeFormat from '../utility/tree'
 const Op = Sequelize.Op;
@@ -16,6 +17,55 @@ class PermissionController {
 			res.json({
 				menus:menus,
 				data
+			})
+		}catch(err){
+			return next(err);
+		}
+	}
+	
+	//创建菜单
+	async createMenu(req,res,next){
+		let {pid,path,name} = req.body;
+		if(validator.isEmpty(path)||validator.isEmpty(name)){
+			return res.json({
+				code:0,
+				msg:'参数缺失'
+			})
+		}
+		try{
+			let menu = await MenuModel.findOne({ where: {[Op.or]: [{path: path}, {name: name}]}});
+			if(menu){
+				return res.json({
+					code:0,
+					msg:'已有改类型菜单'
+				})
+			}
+			await MenuModel.create({
+				pid,
+				path,
+				name
+			});
+			res.json({
+				code:1,
+				msg:'菜单新增成功'
+			})
+		}catch(err){
+			return next(err);
+		}
+	}
+	
+	//删除菜单
+	async removeMenu(req,res,next){
+		let id = req.params['id'];
+		try{
+			await MenuModel.destroy({
+				where:{
+					'id':id
+				}
+			})
+			res.json({
+				code:1,
+				msg:'菜单删除成功'
 			})
 		}catch(err){
 			return next(err);
@@ -233,6 +283,7 @@ class PermissionController {
 		let menus = req.body.menus;
 		let resource = req.body.resource;
 		let role = await RoleModel.findById(roleId);
+		
 		if(!role){
 			res.json({
 				code:0,
@@ -241,8 +292,11 @@ class PermissionController {
 			return ;
 		}
 		try{
+			//先排下序
+			menus.sort(function(a,b) { return a - b });
+			resource.sort(function(a,b) { return a - b });
+			
 			await RoleModel.update({menuIds:menus.join(','),resource:resource.join(',')},{where:{id: roleId}})
-
 			res.json({
 				code:1,
 				msg:'创建成功'

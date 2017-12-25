@@ -15,7 +15,7 @@ class PermissionController {
 			let menus = await MenuModel.findAll();
 			let data = transformTozTreeFormat(JSON.parse(JSON.stringify(menus)))
 			res.json({
-				menus:menus,
+				menus,
 				data
 			})
 		}catch(err){
@@ -25,7 +25,7 @@ class PermissionController {
 	
 	//创建菜单
 	async createMenu(req,res,next){
-		let {pid,path,name} = req.body;
+		let {pid,path,name,icon,hidden} = req.body;
 		if(validator.isEmpty(path)||validator.isEmpty(name)){
 			return res.json({
 				code:0,
@@ -40,11 +40,7 @@ class PermissionController {
 					msg:'已有改类型菜单'
 				})
 			}
-			await MenuModel.create({
-				pid,
-				path,
-				name
-			});
+			await MenuModel.create({pid,path,name,icon,hidden});
 			res.json({
 				code:1,
 				msg:'菜单新增成功'
@@ -54,6 +50,32 @@ class PermissionController {
 		}
 	}
 	
+	//更新菜单
+	async updateMenu(req,res,next){
+		let {id,path,name,icon,hidden} = req.body;
+		if(validator.isEmpty(path)||validator.isEmpty(name)){
+			return res.json({
+				code:0,
+				msg:'参数缺失'
+			})
+		}
+		try{
+			let obj = {		
+				path,
+				name,
+				icon,
+				hidden
+			}
+			await MenuModel.update(obj,{where:{id:id}});
+			res.json({
+				code:1,
+				msg:'菜单更新成功'
+			})
+		}catch(err){
+			return next(err);
+		}
+	}
+
 	//删除菜单
 	async removeMenu(req,res,next){
 		let id = req.params['id'];
@@ -71,6 +93,7 @@ class PermissionController {
 			return next(err);
 		}
 	}
+
 
 	//创建权限
 	async createPermission(req,res,next){

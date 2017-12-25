@@ -21,6 +21,7 @@ router.post('/permission/createRole',auth.checkToken,auth.checkRole,permissionCt
 router.get('/permission/roles',auth.checkToken,auth.checkRole,permissionCtrl.getRoles);
 router.post('/permission/createPermission',auth.checkToken,auth.checkRole,permissionCtrl.createPermission);
 router.post('/permission/createMenu',auth.checkToken,auth.checkRole,permissionCtrl.createMenu);
+router.post('/permission/updateMenu',auth.checkToken,auth.checkRole,permissionCtrl.updateMenu);
 router.delete('/permission/menus/:id',auth.checkToken,auth.checkRole,permissionCtrl.removeMenu);
 router.get('/permission/getPermission',auth.checkToken,auth.checkRole,permissionCtrl.getPermissionList);
 router.get('/permission/getPermissionByRoleId',auth.checkToken,permissionCtrl.getPermissionByRoleId);

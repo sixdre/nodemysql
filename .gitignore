@@ -1,2 +1,4 @@
 /node_modules
 /.project
+/public/static
+/public/index.html

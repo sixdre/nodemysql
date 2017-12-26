@@ -14,4 +14,7 @@ var apiLimiter = new RateLimit({
 
 export default app => {
 	app.use('/api',apiRouter);
+	app.get('/',function(req,res,next){
+		res.render('index')
+	});
 }

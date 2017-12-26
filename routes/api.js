@@ -20,6 +20,7 @@ router.get('/permission/menus',auth.checkToken,auth.checkRole,permissionCtrl.get
 router.post('/permission/createRole',auth.checkToken,auth.checkRole,permissionCtrl.createRole);
 router.get('/permission/roles',auth.checkToken,auth.checkRole,permissionCtrl.getRoles);
 router.post('/permission/createPermission',auth.checkToken,auth.checkRole,permissionCtrl.createPermission);
+router.post('/permission/updatePermission',auth.checkToken,auth.checkRole,permissionCtrl.updatePermission);
 router.post('/permission/createMenu',auth.checkToken,auth.checkRole,permissionCtrl.createMenu);
 router.post('/permission/updateMenu',auth.checkToken,auth.checkRole,permissionCtrl.updateMenu);
 router.delete('/permission/menus/:id',auth.checkToken,auth.checkRole,permissionCtrl.removeMenu);
@@ -30,14 +31,21 @@ router.post('/permission/saveRolePermission',auth.checkToken,auth.checkRole,perm
 
 
 
-/*RESTful API API*/
-// router.get('/menus',permissionCtrl.getMenus);
-// router.get('/permissions',permissionCtrl.getPermissionList);
-// router.post('/permissions',permissionCtrl.createPermission);
-// router.get('/roles',permissionCtrl.getRoles);
-// router.get('/roles/:id/permission',permissionCtrl.getPermissionByRoleId);
-// router.post('/roles/:id/permission',permissionCtrl.saveRolePermission);
-// router.post('/roles',permissionCtrl.createRole);
+
+
+/*RESTful API */
+//router.get('/menus',permissionCtrl.getMenus);
+//router.post('/menus',permissionCtrl.createMenu);
+//router.put('/menus/:id',permissionCtrl.updateMenu);
+//router.delete('/menus/:id',permissionCtrl.removeMenu);
+//router.get('/permissions',permissionCtrl.getPermissionList);
+//router.post('/permissions',permissionCtrl.createPermission);
+//router.put('/permissions/:id',permissionCtrl.updatePermission);
+//router.get('/roles',permissionCtrl.getRoles);
+//router.post('/roles',permissionCtrl.createRole);
+//router.get('/roles/:id/permission',permissionCtrl.getPermissionByRoleId);
+//router.post('/roles/:id/permission',permissionCtrl.saveRolePermission);
+
 
 
 

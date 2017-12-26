@@ -97,32 +97,48 @@ class PermissionController {
 
 	//创建权限
 	async createPermission(req,res,next){
+		let {name,resource,type,tag} = req.body;
 		try{
-			let {id,name,resource,type,tag} = req.body;
 			let obj = {		//创建
 				name,
 				resource,
 				type,
 				tag
 			}
-			if(id){				//更新
-				await PermissionModel.update(obj,{where:{id:id}});
-				res.json({
-					code:1,
-					msg:'权限更新成功'
-				})
-			}else{
-				await PermissionModel.create(obj);
-				res.json({
-					code:1,
-					msg:'权限创建成功'
-				})
-			}
+			await PermissionModel.create(obj);
+			res.json({
+				code:1,
+				msg:'权限创建成功'
+			})
 		}catch(err){
 			return next(err);
 		}
 		
 	}
+	
+	
+	//更新权限
+	async updatePermission(req,res,next){
+		let {id,name,resource,type,tag} = req.body;
+		try{
+			let obj = {		//创建
+				name,
+				resource,
+				type,
+				tag
+			}
+			await PermissionModel.update(obj,{where:{id:id}});
+			res.json({
+				code:1,
+				msg:'权限更新成功'
+			})
+		}catch(err){
+			return next(err);
+		}
+	}
+	
+	
+	
 	
 	//删除权限
 	removePermission(req,res,next){
